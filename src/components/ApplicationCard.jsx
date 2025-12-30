@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function ApplicationCard({ company, role, status }) {
+export default function ApplicationCard({ company, role, status, onDelete }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -36,14 +38,21 @@ export default function ApplicationCard({ company, role, status }) {
         ⋯
       </button>
 
-<div
-  ref={menuRef}
-  className={`card-actions-menu ${isMenuOpen ? "open" : ""}`}
->
-  <button className="card-action-item">✏️ Edit</button>
-  <button className="card-action-item danger">🗑 Delete</button>
-</div>
-
+      <div
+        ref={menuRef}
+        className={`card-actions-menu ${isMenuOpen ? "open" : ""}`}
+      >
+        <button className="card-action-item">✏️ Edit</button>
+        <button
+          className="card-action-item danger"
+          onClick={() => {
+            setIsMenuOpen(false);
+            setIsConfirmOpen(true);
+          }}
+        >
+          🗑 Delete
+        </button>
+      </div>
 
       <div className="app-card-body">
         <p className="app-card-role">{role}</p>
@@ -54,6 +63,28 @@ export default function ApplicationCard({ company, role, status }) {
       <footer className="app-card-footer">
         <span className="app-card-meta">Click to view details</span>
       </footer>
+
+      {isConfirmOpen && (
+        <div className="confirm-overlay">
+          <div className="confirm-dialog">
+            <h3>Delete application?</h3>
+            <p>This action cannot be undone.</p>
+
+            <div className="confirm-actions">
+              <button
+                className="btn-secondary"
+                onClick={() => setIsConfirmOpen(false)}
+              >
+                Cancel
+              </button>
+
+              <button className="btn-danger" onClick={onDelete}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </article>
   );
 }

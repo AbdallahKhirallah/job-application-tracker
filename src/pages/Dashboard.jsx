@@ -41,6 +41,14 @@ const INITIAL_APPLICATIONS = [
 export default function Dashboard({ isLoggedIn }) {
   const [applications, setApplications] = useState(INITIAL_APPLICATIONS);
 
+  // Handling deleting an application
+  function handleDeleteApplication(id) {
+  setApplications(prev =>
+    prev.filter(app => app.id !== id)
+  );
+}
+
+
   // The Logged-out view
   if (!isLoggedIn) {
     return (
@@ -81,6 +89,7 @@ export default function Dashboard({ isLoggedIn }) {
             company={app.company}
             role={app.role}
             status={app.status.toLowerCase()}
+            onDelete={() => handleDeleteApplication(app.id)}
           />
         ))}
       </div>
