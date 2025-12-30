@@ -9,27 +9,34 @@ const INITIAL_APPLICATIONS = [
     id: 1,
     company: "Google",
     role: "Software Engineering Intern",
-    status: "Applied",
+    status: "applied",
     location: "Remote",
     appliedAt: "2025-01-02",
+    source: "Careers page",
+    notes: "Applied with referral. Focus on systems + DSA.",
   },
   {
     id: 2,
     company: "Shopify",
     role: "Frontend Intern",
-    status: "Interview",
+    status: "interview",
     location: "Canada",
     appliedAt: "2025-01-10",
+    source: "LinkedIn",
+    notes: "First-round completed. Waiting for feedback.",
   },
   {
     id: 3,
     company: "Amazon",
     role: "SDE Intern",
-    status: "Rejected",
+    status: "rejected",
     location: "Vancouver",
     appliedAt: "2024-12-20",
+    source: "Online assessment",
+    notes: "OA passed, rejection after interview.",
   },
 ];
+
 
 export default function Dashboard({ isLoggedIn }) {
   const [applications, setApplications] = useState(INITIAL_APPLICATIONS);
