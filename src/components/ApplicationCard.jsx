@@ -1,10 +1,22 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function ApplicationCard({ company, role, status, onDelete }) {
+export default function ApplicationCard({   company,
+  role,
+  status,
+  location,
+  appliedAt,
+  source,
+  notes,
+  isExpanded,
+  onToggle,
+  onDelete, 
+cardRef }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -23,7 +35,7 @@ export default function ApplicationCard({ company, role, status, onDelete }) {
   }, [isMenuOpen]);
 
   return (
-    <article className="app-card">
+    <article ref={cardRef}  className="app-card">
       <header className="app-card-header">
         <h2 className="app-card-company">{company}</h2>
       </header>
@@ -58,11 +70,41 @@ export default function ApplicationCard({ company, role, status, onDelete }) {
         <p className="app-card-role">{role}</p>
       </div>
 
+      {isExpanded && (
+        <div className="app-card-details">
+          <div className="detail-row">
+            <span className="detail-label">Location</span>
+            <span className="detail-value">{location}</span>
+          </div>
+
+          <div className="detail-row">
+            <span className="detail-label">Applied</span>
+            <span className="detail-value">{appliedAt}</span>
+          </div>
+
+          <div className="detail-row">
+            <span className="detail-label">Source</span>
+            <span className="detail-value">{source}</span>
+          </div>
+
+          <div className="detail-notes">
+            <span className="detail-label">Notes</span>
+            <p>{notes}</p>
+          </div>
+          
+        </div>
+      )}
+
       <div className="app-card-divider" />
 
-      <footer className="app-card-footer">
-        <span className="app-card-meta">Click to view details</span>
-      </footer>
+<footer className="app-card-footer">
+  <button
+    className="app-card-toggle"
+    onClick={onToggle}
+  >
+    {isExpanded ? "Hide details" : "View details"}
+  </button>
+</footer>
 
       {isConfirmOpen && (
         <div className="confirm-overlay">

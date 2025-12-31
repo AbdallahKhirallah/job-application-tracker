@@ -432,6 +432,7 @@ button:focus-visible {
 /* Card grid */
 .dashboard-grid {
   display: grid;
+  align-items: start;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 22px;
   margin-top: 32px;
@@ -506,6 +507,30 @@ button:focus-visible {
 
 .card-menu-btn:hover {
   color: var(--accent-warm);
+}
+
+
+.app-card-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.app-card-toggle:hover {
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 /* =========================
@@ -629,4 +654,43 @@ button:focus-visible {
 
 .btn-danger:hover {
   background-color: rgba(168, 104, 104, 0.35);
+}
+
+
+/* =========================
+   CARD EXPANDED DETAILS
+   ========================= */
+
+.app-card-details {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(139, 131, 120, 0.25);
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.detail-label {
+  color: var(--text-secondary);
+}
+
+.detail-value {
+  color: var(--text-primary);
+}
+
+.detail-notes {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.detail-notes p {
+  margin: 4px 0 0;
+  line-height: 1.4;
 }
