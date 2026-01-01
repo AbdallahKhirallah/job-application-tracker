@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 
-export default function Navbar({ isLoggedIn, onOpenAuth  }) {
+export default function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const hoverTimeout = useRef(null);
 
@@ -29,16 +29,16 @@ export default function Navbar({ isLoggedIn, onOpenAuth  }) {
             {/*Nav bar content when logged out */}
           {!isLoggedIn && (
             <>
-              <span className="navbar-item">Login</span>
-              {/*Clicking the Register button triggers the openAuth function in App.jsx  */}
+            {/*Clicking the Register/Login button triggers the openAuth function in App.jsx  */}
+              <span className="navbar-item" onClick={() => onOpenAuth("login")} >Login</span>
               <span className="navbar-item" onClick={() => onOpenAuth("register")} >Register</span>
             </>
           )}
             {/*Nav bar content when logged in */}
           {isLoggedIn && (
             <>
-              <span className="navbar-item">Profile</span>
-              <span className="navbar-item navbar-logout">Logout</span>
+              <span className="navbar-item" onClick={onOpenProfile} >Profile</span>
+              <span className="navbar-item navbar-logout" onClick={onLogout} >Logout</span>
             </>
           )}
         </div>

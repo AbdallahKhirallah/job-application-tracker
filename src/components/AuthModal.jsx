@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 
-export default function AuthModal({ isOpen, mode, onClose }) {
+export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess }) {
   const [shouldRender, setShouldRender] = useState(isOpen);
 
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
     } else {
-      // wait for exit animation before unmounting
+       //Wait for exit animation before unmounting
       const timeout = setTimeout(() => {
         setShouldRender(false);
-      }, 320); // must match CSS duration
+      }, 320);    //To match CSS duration
 
       return () => clearTimeout(timeout);
     }
@@ -31,8 +31,8 @@ export default function AuthModal({ isOpen, mode, onClose }) {
           {mode === "register" ? "Create account" : "Log in"}
         </h2>
 
-        <form className="auth-form" 
-  onSubmit={(e) => { e.preventDefault(); onClose(); }} >
+        <form className="auth-form" onSubmit={(e) => { e.preventDefault(); if (mode === "login") { onLoginSuccess();} else { onClose() }; }} >
+
           {mode === "register" && (
             <div className="auth-field">
               <label>Name</label>

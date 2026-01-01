@@ -848,3 +848,31 @@ AUTH MODAL EXIT ANIMATION
   transform: translateY(10px) scale(0.97);
 }
 
+
+/* =========================
+  PROFILE MODAL (VIEW MODE)
+  ============================ */
+
+.profile-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.profile-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.profile-value {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+

@@ -4,6 +4,11 @@ import { useState } from "react";
 import Navbar from "./layout/Navbar";
 import Dashboard from "./pages/Dashboard";
 import AuthModal from "./components/AuthModal";
+import ProfileModal from "./components/ProfileModal";
+
+
+
+
 
 
 function App() {
@@ -12,6 +17,11 @@ function App() {
 
 const [isAuthOpen, setIsAuthOpen] = useState(false);
 const [authMode, setAuthMode] = useState("register"); // switches between "register" / "login"
+const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  // Temporary state to test Profile functionality 
+  const [user, setUser] = useState({ name: "Abdallah", email: "abdallah@email.com"});
+
 
 function openAuth(mode) {
   console.log("Open auth:", mode);
@@ -23,13 +33,34 @@ function closeAuth() {
   setIsAuthOpen(false);
 }
 
+function handleLoginSuccess() {
+  setIsLoggedIn(true);
+  setIsAuthOpen(false);
+}
+
+function handleLogout() {
+  setIsLoggedIn(false);
+}
+
+function openProfile() {
+  setIsProfileOpen(true);
+}
+
+function closeProfile() {
+  setIsProfileOpen(false);
+}
+
+function handleSaveProfile(updatedUser) {
+  setUser(updatedUser);
+}
 
 
   return (
     <div className="app">
-      <Navbar isLoggedIn={isLoggedIn} onOpenAuth={openAuth} />
+      <Navbar isLoggedIn={isLoggedIn} onOpenAuth={openAuth} onLogout={handleLogout} onOpenProfile={openProfile}  />
       <Dashboard isLoggedIn={isLoggedIn} onOpenAuth={openAuth} />
-      <AuthModal isOpen={isAuthOpen} mode={authMode} onClose={closeAuth} />
+      <AuthModal isOpen={isAuthOpen} mode={authMode} onClose={closeAuth} onLoginSuccess={handleLoginSuccess}  />
+      <ProfileModal isOpen={isProfileOpen} user={user} onClose={closeProfile} onSave={handleSaveProfile} />
 
 
       {/* TEMP DEV TOGGLE (remove later) */}

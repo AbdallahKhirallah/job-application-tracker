@@ -83,8 +83,8 @@ export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
         </p>
 
         <div className="dashboard-cta">
-          <button className="btn-primary">Login</button>
-          {/*Clicking the Register button triggers the openAuth function in App.jsx  */}
+          {/*Clicking the Register/Login button triggers the openAuth function in App.jsx  */}
+          <button className="btn-primary" onClick={() => onOpenAuth("login")} >Login</button>
           <button className="btn-secondary" onClick={() => onOpenAuth("register")} >Register</button>
         </div>
 
