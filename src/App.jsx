@@ -3,15 +3,34 @@
 import { useState } from "react";
 import Navbar from "./layout/Navbar";
 import Dashboard from "./pages/Dashboard";
+import AuthModal from "./components/AuthModal";
+
 
 function App() {
   // TEMP: fake auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+const [isAuthOpen, setIsAuthOpen] = useState(false);
+const [authMode, setAuthMode] = useState("register"); // switches between "register" / "login"
+
+function openAuth(mode) {
+  console.log("Open auth:", mode);
+  setAuthMode(mode);
+  setIsAuthOpen(true);
+}
+
+function closeAuth() {
+  setIsAuthOpen(false);
+}
+
+
+
   return (
     <div className="app">
-      <Navbar isLoggedIn={isLoggedIn} />
-      <Dashboard isLoggedIn={isLoggedIn} />
+      <Navbar isLoggedIn={isLoggedIn} onOpenAuth={openAuth} />
+      <Dashboard isLoggedIn={isLoggedIn} onOpenAuth={openAuth} />
+      <AuthModal isOpen={isAuthOpen} mode={authMode} onClose={closeAuth} />
+
 
       {/* TEMP DEV TOGGLE (remove later) */}
       <button

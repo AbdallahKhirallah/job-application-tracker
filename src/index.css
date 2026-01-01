@@ -694,3 +694,157 @@ button:focus-visible {
   margin: 4px 0 0;
   line-height: 1.4;
 }
+
+
+/* =========================
+ AUTH MODAL (REGISTER / LOGIN)
+   ========================= */
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(13, 14, 18, 0.55);
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 200;
+  animation: authFadeIn 280ms ease;
+}
+
+
+.auth-modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 30px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+
+  animation: authSlideUp 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*Modal title */
+.auth-title {
+  margin: 0 0 22px;
+  font-size: 1.45rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/*The Form layout */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+.auth-field label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+
+.auth-field input {
+  background: var(--bg-elevated);
+  border: none;
+  border-radius: var(--radius-sm);
+
+  padding: 11px 12px;
+  font-size: 0.95rem;
+
+  color: var(--text-primary);
+
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+
+.auth-field input:focus {
+  outline: none;
+  background-color: var(--bg-navbar);
+  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
+}
+
+/*Action buttons container */
+.auth-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+/*Entry animation */
+@keyframes authSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/*Overlay fade*/
+@keyframes authFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================
+AUTH MODAL EXIT ANIMATION
+   ========================= */
+
+.auth-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.auth-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 280ms ease;
+}
+
+.auth-overlay.closing {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+.auth-modal {
+  transform: translateY(14px) scale(0.98);
+  transition:
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 320ms ease;
+}
+
+.auth-overlay.open .auth-modal {
+  transform: translateY(0) scale(1);
+}
+
+.auth-overlay.closing .auth-modal {
+  transform: translateY(10px) scale(0.97);
+}
+

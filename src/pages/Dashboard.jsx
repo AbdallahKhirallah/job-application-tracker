@@ -37,7 +37,7 @@ const INITIAL_APPLICATIONS = [
   },
 ];
 
-export default function Dashboard({ isLoggedIn }) {
+export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
   const [applications, setApplications] = useState(INITIAL_APPLICATIONS);
 
   const [expandedId, setExpandedId] = useState(null);
@@ -84,7 +84,8 @@ export default function Dashboard({ isLoggedIn }) {
 
         <div className="dashboard-cta">
           <button className="btn-primary">Login</button>
-          <button className="btn-secondary">Register</button>
+          {/*Clicking the Register button triggers the openAuth function in App.jsx  */}
+          <button className="btn-secondary" onClick={() => onOpenAuth("register")} >Register</button>
         </div>
 
         <div className="ghost-grid">
