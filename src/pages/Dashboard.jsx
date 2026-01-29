@@ -64,9 +64,17 @@ export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
 }, [expandedId]);
 
 
+
   // Handling deleting an application
   function handleDeleteApplication(id) {
     setApplications((prev) => prev.filter((app) => app.id !== id));
+  }
+
+  // Handling updating an application
+  function handleUpdateApplication(id, updatedData) {
+    setApplications((prev) =>
+      prev.map((app) => (app.id === id ? { ...app, ...updatedData } : app))
+    );
   }
 
   // The Logged-out view
@@ -107,6 +115,7 @@ export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
           {applications.map((app) => (
             <ApplicationCard
               key={app.id}
+              id={app.id}
               company={app.company}
               role={app.role}
               status={app.status}
@@ -119,6 +128,7 @@ export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
                 setExpandedId((prev) => (prev === app.id ? null : app.id))
               }
               onDelete={() => handleDeleteApplication(app.id)}
+              onEdit={(updatedData) => handleUpdateApplication(app.id, updatedData)}
               cardRef={expandedId === app.id ? expandedCardRef : null}
             />
           ))}

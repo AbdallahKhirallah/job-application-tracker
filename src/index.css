@@ -602,16 +602,21 @@ button:focus-visible {
 
 .confirm-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(13, 14, 18, 0.6);
   backdrop-filter: blur(6px);
 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center;     
+  justify-content: center;  
 
-  z-index: 200;
+  z-index: 9999;
+  pointer-events: auto;
 }
+
 
 .confirm-dialog {
   background-color: var(--bg-surface);
@@ -619,6 +624,8 @@ button:focus-visible {
   padding: 22px 24px;
   max-width: 320px;
   width: 100%;
+  margin: auto;
+  transform: translateY(-13%);  
 
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.6),
@@ -875,4 +882,6 @@ AUTH MODAL EXIT ANIMATION
   font-size: 0.95rem;
   color: var(--text-primary);
 }
+
+
 

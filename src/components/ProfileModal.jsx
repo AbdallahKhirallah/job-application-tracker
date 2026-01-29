@@ -101,7 +101,7 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
                 className="btn-secondary"
                 onClick={() => setIsEditing(false)}
               >
-                Cancelho
+                Cancelo
               </button>
             </>
           )}
