@@ -21,8 +21,18 @@ app.get('/', (req, res) => {
   res.json({ message: 'Job Tracker API running!' });
 });
 
+// NEW TEST ROUTE:
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    message: 'Test route working!',
+    timestamp: new Date(),
+    method: req.method,
+    path: req.path
+  });
+});
+
 // Starting the server
-app.listen(PORT,"127.0.0.1", () => {
+app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
