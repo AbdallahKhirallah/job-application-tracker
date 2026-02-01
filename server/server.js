@@ -17,6 +17,7 @@ const app = express();
 // Step 4: Set the port number (Uses PORT from .env )
 const PORT = process.env.PORT || 5000;
 
+
 // ==========================
 //  MIDDLEWARES
 // =========================
