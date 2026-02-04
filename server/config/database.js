@@ -1,24 +1,35 @@
+
+// Loading environment variables 
+require('dotenv').config();
+
 // This file handles the PostgreSQL database connection
 
 const { Pool } = require('pg');
 
+// Debug: Log what we're connecting with
+console.log('Database Config:');
+console.log('Host:', process.env.DB_HOST);
+console.log('Port:', process.env.DB_PORT);
+console.log('User:', process.env.DB_USER);
+console.log('Database:', process.env.DB_NAME);
+console.log('Password length:', process.env.DB_PASSWORD?.length);
 
 const pool = new Pool({
   host: process.env.DB_HOST,       // Where the database is 
-  port: process.env.DB_PORT,       // PostgreSQL port (usually 5432)
+  port: parseInt(process.env.DB_PORT, 10),       // PostgreSQL port (usually 5432)
   user: process.env.DB_USER,       // database username (usually 'postgres')
-  password: process.env.DB_PASSWORD, // password you set during installation
+  password: String(process.env.DB_PASSWORD), // password you set during installation
   database: process.env.DB_NAME,   // The database name we'll create
 });
 
 // Test the connection when the app starts
 pool.on('connect', () => {
-  console.log('✅ Connected to PostgreSQL database');
+  console.log(' Connected to PostgreSQL database');
 });
 
 // Handle connection errors
 pool.on('error', (err) => {
-  console.error('❌ Unexpected error on idle client', err);
+  console.error(' Unexpected error on idle client', err);
   process.exit(-1);
 });
 

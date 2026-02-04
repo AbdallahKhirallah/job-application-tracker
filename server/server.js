@@ -11,6 +11,12 @@ const pool = require('./config/database');
 // load environment variables from .env file
 dotenv.config();
 
+// Debug: Log environment variables (TEMPORARILY , remove after fixing)
+console.log('Environment Variables:');
+console.log('DB_PASSWORD type:', typeof process.env.DB_PASSWORD);
+console.log('DB_PASSWORD value:', process.env.DB_PASSWORD);
+console.log('DB_PASSWORD length:', process.env.DB_PASSWORD?.length);
+
 // creating Express application
 const app = express();
 
