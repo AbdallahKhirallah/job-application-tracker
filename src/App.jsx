@@ -1,82 +1,84 @@
-
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./layout/Navbar";
 import Dashboard from "./pages/Dashboard";
 import AuthModal from "./components/AuthModal";
 import ProfileModal from "./components/ProfileModal";
-
-
-
-
-
+import { authAPI } from "./services/api";
 
 function App() {
-  // TEMP: fake auth state
+  // Authentification states
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
-const [isAuthOpen, setIsAuthOpen] = useState(false);
-const [authMode, setAuthMode] = useState("register"); // switches between "register" / "login"
-const [isProfileOpen, setIsProfileOpen] = useState(false);
+  //Modal states
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("register"); // switches between "register" / "login"
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  // Temporary state to test Profile functionality 
-  const [user, setUser] = useState({ name: "Abdallah", email: "abdallah@email.com"});
+  useEffect(() => {
+    const loggedIn = authAPI.isLoggedIn();
+    if (loggedIn) {
+      const currentUser = authAPI.getCurrentUser();
+      setIsLoggedIn(true);
+      setUser(currentUser);
+    }
+  }, []);
 
+  function openAuth(mode) {
+    setAuthMode(mode);
+    setIsAuthOpen(true);
+  }
 
-function openAuth(mode) {
-  console.log("Open auth:", mode);
-  setAuthMode(mode);
-  setIsAuthOpen(true);
-}
+  function closeAuth() {
+    setIsAuthOpen(false);
+  }
 
-function closeAuth() {
-  setIsAuthOpen(false);
-}
+  function handleLoginSuccess(userData) {
+    setIsLoggedIn(true);
+    setUser(userData);
+    setIsAuthOpen(false);
+  }
 
-function handleLoginSuccess() {
-  setIsLoggedIn(true);
-  setIsAuthOpen(false);
-}
+  function handleLogout() {
+    authAPI.logout();
+    setIsLoggedIn(false);
+    setUser(null);
+  }
 
-function handleLogout() {
-  setIsLoggedIn(false);
-}
+  function openProfile() {
+    setIsProfileOpen(true);
+  }
 
-function openProfile() {
-  setIsProfileOpen(true);
-}
+  function closeProfile() {
+    setIsProfileOpen(false);
+  }
 
-function closeProfile() {
-  setIsProfileOpen(false);
-}
-
-function handleSaveProfile(updatedUser) {
-  setUser(updatedUser);
-}
-
+  function handleSaveProfile(updatedUser) {
+    setUser(updatedUser);
+    // TO DO : ********** Call API to update user profile on backend************
+  }
 
   return (
     <div className="app">
-      <Navbar isLoggedIn={isLoggedIn} onOpenAuth={openAuth} onLogout={handleLogout} onOpenProfile={openProfile}  />
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        onOpenAuth={openAuth}
+        onLogout={handleLogout}
+        onOpenProfile={openProfile}
+      />
       <Dashboard isLoggedIn={isLoggedIn} onOpenAuth={openAuth} />
-      <AuthModal isOpen={isAuthOpen} mode={authMode} onClose={closeAuth} onLoginSuccess={handleLoginSuccess}  />
-      <ProfileModal isOpen={isProfileOpen} user={user} onClose={closeProfile} onSave={handleSaveProfile} />
-
-
-      {/* TEMP DEV TOGGLE (remove later) */}
-      <button
-        style={{
-          position: "fixed",
-          bottom: 20,
-          left: 20,
-          padding: "8px 12px",
-          fontSize: "0.75rem",
-          opacity: 0.6,
-        }}
-        onClick={() => setIsLoggedIn((prev) => !prev)}
-      >
-        Toggle Auth
-      </button>
+      <AuthModal
+        isOpen={isAuthOpen}
+        mode={authMode}
+        onClose={closeAuth}
+        onLoginSuccess={handleLoginSuccess}
+      />
+      <ProfileModal
+        isOpen={isProfileOpen}
+        user={user}
+        onClose={closeProfile}
+        onSave={handleSaveProfile}
+      />
     </div>
   );
 }
