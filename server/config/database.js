@@ -6,13 +6,6 @@ require('dotenv').config();
 
 const { Pool } = require('pg');
 
-// Debug: Log what we're connecting with
-console.log('Database Config:');
-console.log('Host:', process.env.DB_HOST);
-console.log('Port:', process.env.DB_PORT);
-console.log('User:', process.env.DB_USER);
-console.log('Database:', process.env.DB_NAME);
-console.log('Password length:', process.env.DB_PASSWORD?.length);
 
 const pool = new Pool({
   host: process.env.DB_HOST,       // Where the database is 
