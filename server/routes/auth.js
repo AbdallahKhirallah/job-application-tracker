@@ -71,23 +71,22 @@ router.post('/register', async (req, res) => {
       [name, email, hashedPassword]
     );
 
-    //  JWT token
+    // Creating JSON Web Token (secure ID card that proves who the user is) signed with our secret key
     const token = jwt.sign(
-      { userId: newUser.rows[0].id },  
-      process.env.JWT_SECRET,         
-      { expiresIn: '7d' }             
+      { userId: newUser.rows[0].id },  // what we wanna store in the token
+      process.env.JWT_SECRET,          // Secret key to sign the token
+      { expiresIn: '7d' }              // token expires in 7 days
     );
 
-    
+
     // (Success) Returning the user info (without password) and the token
     res.status(201).json({
       message: 'User registered successfully',
       user: {
-        id: newUser.rows[0].id ,
+        id: newUser.rows[0].id,
         name: newUser.rows[0].name,
         email: newUser.rows[0].email,
       },
-
       token: token
     });
 
@@ -95,6 +94,78 @@ router.post('/register', async (req, res) => {
     console.error('Registration error:' , error);
     res.status(500).json({ 
       message: 'Error registering user',
+      error: error.message 
+    });
+  }
+});
+
+// ========================================
+// LOGIN ROUTE
+// =======================================
+// POST /api/auth/login
+// Authenticating existing user
+
+router.post('/login', async (req, res) => {
+  try {
+    //Getting email and password from request
+    const { email, password } = req.body;
+
+    //Input validation
+    if (!email || !password) {
+      return res.status(400).json({ 
+        message: 'Please provide the E-mail and password' 
+      });
+    }
+
+    //Finding user in database
+    const user = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+
+    // In Case no user found with this email
+    if (user.rows.length === 0) {
+      return res.status(401).json({ 
+        message: 'Invalid E-mail Address' 
+      });
+    }
+
+    // Password checking
+    // Compare provided password with the hashed password in db
+    const validPassword = await bcrypt.compare(
+      password, 
+      user.rows[0].password
+    );
+
+    if (!validPassword) {
+      return res.status(401).json({ 
+        message: 'Invalid Password' 
+      });
+    }
+
+    //Creating a JWT token
+    const token = jwt.sign(
+      { userId: user.rows[0].id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }      // expires in 7 days
+    );
+
+    // Successful Login
+    res.json({
+      message: 'Login successful',
+      user: {
+        id: user.rows[0].id,
+        name: user.rows[0].name,
+        email: user.rows[0].email,
+      },
+      token: token
+    });
+
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      message: 'Error logging in',
       error: error.message 
     });
   }
