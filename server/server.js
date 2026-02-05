@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const pool = require('./config/database');
+const authRoutes = require('./routes/auth');
 
 // load environment variables from .env file
 dotenv.config();
@@ -69,9 +70,11 @@ app.get('/api/test-db', async (req, res) => {
 // API ROUTES (TO BE ADDED)
 // ============================================
 
+ // Authentication routes (register, login)
+// All routes in authRoutes will be prefixed with /api/auth
+app.use('/api/auth', authRoutes);
+
 // Roots to be implemented:
-// - POST /api/auth/register - Create new user account
-// - POST /api/auth/login -  Login existing user
 // - GET /api/applications - Get all applications for logged-in user
 // - POST /api/applications  - Create new application
 // - PUT /api/applications/:id - Update an application
