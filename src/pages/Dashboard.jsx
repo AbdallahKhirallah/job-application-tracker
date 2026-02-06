@@ -1,5 +1,7 @@
 import { useState , useRef , useEffect  } from "react";
 import ApplicationCard from "../components/ApplicationCard";
+import "./Dashboard.css";
+
 
 {
   /*hardcoded applications*/
@@ -42,6 +44,8 @@ export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
 
   const [expandedId, setExpandedId] = useState(null);
 
+  const [hoveredButton, setHoveredButton] = useState(null);
+
   const expandedCardRef = useRef(null);
 
   useEffect(() => {
@@ -80,26 +84,67 @@ export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
   // The Logged-out view
   if (!isLoggedIn) {
     return (
-      <main className="dashboard dashboard-empty">
-        <h1 className="dashboard-title">
-          Track your internship applications in one place
-        </h1>
+      <main className="dashboard dashboard-empty dashboard-logged-out">
+        {/* Animated gradient background */}
+        <div className="dashboard-background" />
 
-        <p className="dashboard-subtitle">
-          Save applications, track statuses, and manage your internship search
-          with clarity.
-        </p>
-
-        <div className="dashboard-cta">
-          {/*Clicking the Register/Login button triggers the openAuth function in App.jsx  */}
-          <button className="btn-primary" onClick={() => onOpenAuth("login")} >Login</button>
-          <button className="btn-secondary" onClick={() => onOpenAuth("register")} >Register</button>
+        {/* Floating abstract orbs */}
+        <div className="floating-elements">
+          <div className="floating-orb-1" />
+          <div className="floating-orb-2" />
+          <div className="floating-orb-3" />
+          <div className="floating-orb-4" />
         </div>
 
-        <div className="ghost-grid">
-          <div className="ghost-card" />
-          <div className="ghost-card" />
-          <div className="ghost-card" />
+        {/* Main Content */}
+        <div className="dashboard-content">
+          {/* Enhanced Title with Mirror Shine */}
+          <h1 className="dashboard-title dashboard-title-wrapper">
+            <span className="dashboard-title-gradient">
+              Track your internship applications<br />in one place
+            </span>
+            {/* Mirror shine overlay */}
+            <span className="dashboard-title-shine">
+              Track your internship applications<br />in one place
+            </span>
+          </h1>
+
+          <p className="dashboard-subtitle">
+            Save applications, track statuses, and manage your internship search
+            with clarity.
+          </p>
+
+          {/* Enhanced CTAs */}
+          <div className="dashboard-cta">
+            <button 
+              className="btn-primary"
+              onMouseEnter={() => setHoveredButton('login')}
+              onMouseLeave={() => setHoveredButton(null)}
+              onClick={() => onOpenAuth("login")}
+              style={{
+                background: hoveredButton === 'login' 
+                  ? 'linear-gradient(135deg, #B38CA4 0%, #8B8378 100%)'
+                  : 'var(--bg-elevated)',
+              }}
+            >
+              Login
+            </button>
+            <button 
+              className="btn-secondary"
+              onMouseEnter={() => setHoveredButton('register')}
+              onMouseLeave={() => setHoveredButton(null)}
+              onClick={() => onOpenAuth("register")}
+            >
+              Register
+            </button>
+          </div>
+
+          {/* Enhanced glassmorphic Cards*/}
+          <div className="ghost-grid">
+            {[1, 2, 3].map((i) => (
+              <EnhancedGhostCard key={i} index={i} />
+            ))}
+          </div>
         </div>
       </main>
     );
@@ -135,5 +180,26 @@ export default function Dashboard({ isLoggedIn, onOpenAuth  }) {
         </div>
       </div>
     </main>
+  );
+}
+
+
+// Enhanced Ghost Card Component
+function EnhancedGhostCard({ index }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <div
+      className={`ghost-card ${isHovered ? 'hovered' : ''}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Gradient overlay */}
+      <div className={`ghost-card-overlay ghost-card-overlay-${index}`} />
+      
+      {/* Card Content Shimmer */}
+      <div className={`ghost-card-shimmer-top delay-${index}`} />
+      <div className={`ghost-card-shimmer-bottom delay-${index}`} />
+    </div>
   );
 }
