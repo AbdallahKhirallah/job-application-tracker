@@ -74,11 +74,20 @@ app.get('/api/test-db', async (req, res) => {
 // All routes in authRoutes will be prefixed with /api/auth
 app.use('/api/auth', authRoutes);
 
-// Roots to be implemented:
-// - GET /api/applications - Get all applications for logged-in user
-// - POST /api/applications  - Create new application
-// - PUT /api/applications/:id - Update an application
-// - DELETE /api/applications/:id -  Delete an application
+// Applications routes (CRUD operations for job applications)
+// Routes in applicationsRoutes prefixed with /api/applications
+// Connecting  applications routes
+app.use('/api/applications', applicationsRoutes);
+
+// Routes :
+// - POST   /api/auth/register            - Register new user
+// - POST   /api/auth/login               - Login existing user
+// - GET    /api/applications             - Get all applications for logged in user
+// - GET    /api/applications/:id         - Get single application by ID
+// - POST   /api/applications             - Create new application
+// - PUT    /api/applications/:id         - Update an application
+// - DELETE /api/applications/:id         - Delete an application
+// - GET    /api/applications/stats/summary   - Get application statistics
 
 
 // ============================================
