@@ -8,6 +8,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const pool = require('./config/database');
 const authRoutes = require('./routes/auth');
+const applicationsRoutes = require('./routes/applications');
 
 // load environment variables from .env file
 dotenv.config();
