@@ -19,7 +19,7 @@ function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile }) {
   return (
     <nav
       className={`navbar  ${isExpanded ? "expanded" : ""}`}
-      
+
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -31,7 +31,7 @@ function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile }) {
       
       {/* Logo with particles - ALWAYS VISIBLE */}
       <div className="navbar-logo-wrapper">
-        <span className="navbar-logo">JobTrack</span>
+        <span className="navbar-logo">JAT</span>
         <div className="navbar-logo-particles">
           <div className="particle particle-1" />
           <div className="particle particle-2" />

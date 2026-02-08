@@ -237,20 +237,8 @@
   filter: blur(1px);
 }
 
-.navbar-item::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  width: 100%;
-  height: 1px;
-  background-color: var(--accent-rose);
-  opacity: 0;
-  transform: scaleX(0.6);
-  transition:
-    opacity 220ms ease,
-    transform 220ms ease;
-}
+
+
 
 .navbar-item:hover {
   color: var(--text-primary);
