@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
+import './Navbar.css';
 
-export default function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile }) {
+function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const hoverTimeout = useRef(null);
 
@@ -17,28 +18,42 @@ export default function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile
 
   return (
     <nav
-      className={`navbar ${isExpanded ? "expanded" : ""}`}
+      className={`navbar  ${isExpanded ? "expanded" : ""}`}
+      
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <span className="navbar-logo">JobTrack</span>
+      {/* Animated gradient border */}
+      <div className="navbar-border-glow" />
+      
+      {/* Inner gradient overlay */}
+      <div className="navbar-inner-glow" />
+      
+      {/* Logo with particles - ALWAYS VISIBLE */}
+      <div className="navbar-logo-wrapper">
+        <span className="navbar-logo">JobTrack</span>
+        <div className="navbar-logo-particles">
+          <div className="particle particle-1" />
+          <div className="particle particle-2" />
+          <div className="particle particle-3" />
+        </div>
+      </div>
+
+      {/* Dashboard - ALWAYS VISIBLE */}
       <span className="navbar-home">Dashboard</span>
 
+      {/* Menu items - only visible when expanded */}
       {isExpanded && (
         <div className="navbar-items">
-            {/*Nav bar content when logged out */}
-          {!isLoggedIn && (
+          {!isLoggedIn ? (
             <>
-            {/*Clicking the Register/Login button triggers the openAuth function in App.jsx  */}
-              <span className="navbar-item" onClick={() => onOpenAuth("login")} >Login</span>
-              <span className="navbar-item" onClick={() => onOpenAuth("register")} >Register</span>
+              <span className="navbar-item" onClick={() => onOpenAuth('login')}>Login</span>
+              <span className="navbar-item" onClick={() => onOpenAuth('register')}>Register</span>
             </>
-          )}
-            {/*Nav bar content when logged in */}
-          {isLoggedIn && (
+          ) : (
             <>
-              <span className="navbar-item" onClick={onOpenProfile} >Profile</span>
-              <span className="navbar-item navbar-logout" onClick={onLogout} >Logout</span>
+              <span className="navbar-item" onClick={onOpenProfile}>Profile</span>
+              <span className="navbar-item navbar-logout" onClick={onLogout}>Logout</span>
             </>
           )}
         </div>
@@ -46,3 +61,5 @@ export default function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile
     </nav>
   );
 }
+
+export default Navbar;
