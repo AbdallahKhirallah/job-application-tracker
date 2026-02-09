@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import Navbar from "./layout/Navbar";
 import Dashboard from "./pages/Dashboard";
-import AuthModal from "./components/AuthModal";
-import ProfileModal from "./components/ProfileModal";
+import AuthModal from "./components/modals/AuthModal"
+import ProfileModal from "./components/modals/ProfileModal"
 import { authAPI } from "./services/api";
+import './index.css' 
 
 function App() {
   // Authentification states

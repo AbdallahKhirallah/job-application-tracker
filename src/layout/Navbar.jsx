@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './Navbar.css';
 
+
 function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const hoverTimeout = useRef(null);

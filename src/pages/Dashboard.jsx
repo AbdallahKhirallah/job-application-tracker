@@ -1,5 +1,5 @@
 import { useState , useRef , useEffect  } from "react";
-import ApplicationCard from "../components/ApplicationCard";
+import ApplicationCard from "../components/ApplicationCard/ApplicationCard"
 import "./Dashboard.css";
 
 

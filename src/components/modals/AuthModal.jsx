@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { authAPI } from "../services/api";
+import { authAPI } from "../../services/api";
 
 export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess }) {
   const [shouldRender, setShouldRender] = useState(isOpen);
