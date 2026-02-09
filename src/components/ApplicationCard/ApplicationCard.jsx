@@ -72,6 +72,7 @@ export default function ApplicationCard({   company,
   }
 
   return (
+    <>
     <article ref={cardRef}  className="app-card">
       <header className="app-card-header">
         <h2 className="app-card-company">{company}</h2>
@@ -151,7 +152,10 @@ export default function ApplicationCard({   company,
   </button>
 </footer>
 
-      {isConfirmOpen && (
+
+    </article>
+
+          {isConfirmOpen && (
         <div className="confirm-overlay">
           <div className="confirm-dialog">
             <h3>Delete application?</h3>
@@ -269,6 +273,7 @@ export default function ApplicationCard({   company,
           </div>
         </div>
       )}
-    </article>
+      
+      </>
   );
 }

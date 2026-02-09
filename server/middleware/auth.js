@@ -4,6 +4,8 @@
 // This middleware runs BEFORE any route that needs authentication
 // It checks if the user has a valid token and extracts their user ID
 
+const jwt = require('jsonwebtoken'); 
+
 
 const authenticateToken = (req, res, next) => {
   // Getting the token from the Authorization header

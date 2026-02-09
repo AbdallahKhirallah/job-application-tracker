@@ -464,3 +464,11 @@
 .dashboard-content::-webkit-scrollbar-thumb:hover {
   background: rgba(179, 140, 164, 0.5);
 }
+
+
+/* Error message in forms */
+.form-error-message {
+  color: var(--status-rejected);
+  font-size: 0.85rem;
+  margin-top: -8px;
+}
