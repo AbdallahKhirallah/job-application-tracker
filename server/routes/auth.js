@@ -75,7 +75,7 @@ router.post('/register', async (req, res) => {
     const token = jwt.sign(
       { userId: newUser.rows[0].id },  // what we wanna store in the token
       process.env.JWT_SECRET,          // Secret key to sign the token
-      { expiresIn: '7d' }              // token expires in 7 days
+      { expiresIn: '12h' }              // token expires in 12 hrs
     );
 
 

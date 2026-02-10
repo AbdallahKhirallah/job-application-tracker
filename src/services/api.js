@@ -50,9 +50,36 @@ const removeUser = () => {
 // API REQUEST HELPER
 // ============================================
 
-// Generic function to make API requests (to handle adding the auth token automatically)
+// A generic function to make API requests (to handle adding the auth token automatically)
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
+
+
+    // Client side Token expiry check 
+  if (token) {
+    try {
+
+      // Decoding JWT payload to extract expiration time
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiryTime = tokenPayload.exp * 1000; // exp is in seconds, convert to ms
+      
+      // if token expired, logout user and refresh page
+      if (Date.now() >= expiryTime) {
+        removeToken();
+        removeUser();
+        window.location.reload();
+        return;
+      }
+
+    } catch (e) {
+      // Token malformed , clear auth data
+      removeToken();
+      removeUser();
+      window.location.reload();
+      return;
+    }
+  }
+
   
   // headers
   const headers = {
