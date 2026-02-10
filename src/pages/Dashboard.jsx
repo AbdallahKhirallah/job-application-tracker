@@ -22,7 +22,7 @@ const [createFormData, setCreateFormData] = useState({
   role: "",
   status: "applied",
   location: "",
-  applied_at: "",
+  //applied_at: "",
   source: "",
   notes: "",
 });
@@ -119,7 +119,7 @@ async function handleCreateSubmit(e) {
       role: "",
       status: "applied",
       location: "",
-      applied_at: "",
+      //applied_at: "",
       source: "",
       notes: "",
     });

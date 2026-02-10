@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function ApplicationCard({   company,
+export default function ApplicationCard({
+  company,
   role,
   status,
   location,
@@ -11,7 +12,8 @@ export default function ApplicationCard({   company,
   onToggle,
   onDelete,
   onEdit,
-  cardRef }) {
+  cardRef,
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -26,8 +28,6 @@ export default function ApplicationCard({   company,
     source: "",
     notes: "",
   });
-
-  
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -45,7 +45,6 @@ export default function ApplicationCard({   company,
     };
   }, [isMenuOpen]);
 
-  
   // Initialize form data when edit modal opens
   useEffect(() => {
     if (isEditOpen) {
@@ -61,129 +60,111 @@ export default function ApplicationCard({   company,
     }
   }, [isEditOpen, company, role, status, location, appliedAt, source, notes]);
 
+  function handleChange(e) {
+    const { name, value } = e.target;
 
+    // Preventing future dates for appliedAt
+    if (name === "appliedAt" && value) {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-
-function handleChange(e) {
-  const { name, value } = e.target;
-  
-  // Preventing future dates for appliedAt 
-  if (name === "appliedAt" && value) {
-    const selectedDate = new Date(value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); 
-    
-    if (selectedDate > today) {
-      return;  // Don't update if future date
+      if (selectedDate > today) {
+        return; // Don't update if future date
+      }
     }
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
-  
-  setFormData((prev) => ({ ...prev, [name]: value }));
-}
 
+  function handleSave() {
+    const dataToSave = {
+      ...formData,
+      applied_at: formData.appliedAt,
+    };
 
+    delete dataToSave.appliedAt;
 
-function handleSave() {
- 
-  const dataToSave = {
-    ...formData,
-    applied_at: formData.appliedAt
-  };
-
-  delete dataToSave.appliedAt;
-  
-  onEdit(dataToSave);
-  setIsEditOpen(false);
-  setIsMenuOpen(false);
-}
-
-
+    onEdit(dataToSave);
+    setIsEditOpen(false);
+    setIsMenuOpen(false);
+  }
 
   return (
     <>
-    <article ref={cardRef}  className="app-card">
-      <header className="app-card-header">
-        <h2 className="app-card-company">{company}</h2>
-      </header>
+      <article ref={cardRef} className="app-card">
+        <header className="app-card-header">
+          <h2 className="app-card-company">{company}</h2>
+        </header>
 
-      <span className={`status-badge status-${status}`}>{status}</span>
+        <span className={`status-badge status-${status}`}>{status}</span>
 
-      <button
-        className="card-menu-btn"
-        aria-label="Application actions"
-        onClick={() => setIsMenuOpen((prev) => !prev)}
-      >
-        ⋯
-      </button>
-
-      <div
-        ref={menuRef}
-        className={`card-actions-menu ${isMenuOpen ? "open" : ""}`}
-      >
-        <button 
-          className="card-action-item"
-          onClick={() => {
-            setIsMenuOpen(false);
-            setIsEditOpen(true);
-          }}
-        >
-          ✏️ Edit
-        </button>
         <button
-          className="card-action-item danger"
-          onClick={() => {
-            setIsMenuOpen(false);
-            setIsConfirmOpen(true);
-          }}
+          className="card-menu-btn"
+          aria-label="Application actions"
+          onClick={() => setIsMenuOpen((prev) => !prev)}
         >
-          🗑 Delete
+          ⋯
         </button>
-      </div>
 
-      <div className="app-card-body">
-        <p className="app-card-role">{role}</p>
-      </div>
-
-      {isExpanded && (
-        <div className="app-card-details">
-          <div className="detail-row">
-            <span className="detail-label">Location</span>
-            <span className="detail-value">{location}</span>
-          </div>
-
-          <div className="detail-row">
-            <span className="detail-label">Applied</span>
-            <span className="detail-value">{appliedAt}</span>
-          </div>
-
-          <div className="detail-row">
-            <span className="detail-label">Source</span>
-            <span className="detail-value">{source}</span>
-          </div>
-
-          <div className="detail-notes">
-            <span className="detail-label">Notes</span>
-            <p>{notes}</p>
-          </div>
-          
+        <div
+          ref={menuRef}
+          className={`card-actions-menu ${isMenuOpen ? "open" : ""}`}
+        >
+          <button
+            className="card-action-item"
+            onClick={() => {
+              setIsMenuOpen(false);
+              setIsEditOpen(true);
+            }}
+          >
+            ✏️ Edit
+          </button>
+          <button
+            className="card-action-item danger"
+            onClick={() => {
+              setIsMenuOpen(false);
+              setIsConfirmOpen(true);
+            }}
+          >
+            🗑 Delete
+          </button>
         </div>
-      )}
 
-      <div className="app-card-divider" />
+        <div className="app-card-body">
+          <p className="app-card-role">{role}</p>
+        </div>
 
-<footer className="app-card-footer">
-  <button
-    className="app-card-toggle"
-    onClick={onToggle}
-  >
-    {isExpanded ? "Hide details" : "View details"}
-  </button>
-</footer>
+        {isExpanded && (
+          <div className="app-card-details">
+            <div className="detail-row">
+              <span className="detail-label">Location</span>
+              <span className="detail-value">{location}</span>
+            </div>
 
 
-    </article>
+            <div className="detail-row">
+              <span className="detail-label">Source</span>
+              <span className="detail-value">{source}</span>
+            </div>
 
-          {isConfirmOpen && (
+            <div className="detail-notes">
+              <span className="detail-label">Notes</span>
+              <p>{notes}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="app-card-divider" />
+
+        <footer className="app-card-footer">
+          <button className="app-card-toggle" onClick={onToggle}>
+            {isExpanded ? "Hide details" : "View details"}
+          </button>
+        </footer>
+      </article>
+
+      {isConfirmOpen && (
         <div className="confirm-overlay">
           <div className="confirm-dialog">
             <h3>Delete application?</h3>
@@ -255,16 +236,6 @@ function handleSave() {
                 />
               </div>
 
-              <div className="auth-field">
-                <label>Applied At</label>
-                <input
-                  name="appliedAt"
-                  value={formData.appliedAt}
-                  onChange={handleChange}
-                  type="date"
-                  max={new Date().toISOString().split('T')[0]}  // prevebnting future dates
-                />
-              </div>
 
               <div className="auth-field">
                 <label>Source</label>
@@ -302,7 +273,6 @@ function handleSave() {
           </div>
         </div>
       )}
-      
-      </>
+    </>
   );
 }
