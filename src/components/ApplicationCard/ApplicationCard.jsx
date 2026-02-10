@@ -45,6 +45,7 @@ export default function ApplicationCard({   company,
     };
   }, [isMenuOpen]);
 
+  
   // Initialize form data when edit modal opens
   useEffect(() => {
     if (isEditOpen) {
@@ -60,16 +61,43 @@ export default function ApplicationCard({   company,
     }
   }, [isEditOpen, company, role, status, location, appliedAt, source, notes]);
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  }
 
-  function handleSave() {
-    onEdit(formData);
-    setIsEditOpen(false);
-    setIsMenuOpen(false);
+
+
+function handleChange(e) {
+  const { name, value } = e.target;
+  
+  // Preventing future dates for appliedAt 
+  if (name === "appliedAt" && value) {
+    const selectedDate = new Date(value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+    
+    if (selectedDate > today) {
+      return;  // Don't update if future date
+    }
   }
+  
+  setFormData((prev) => ({ ...prev, [name]: value }));
+}
+
+
+
+function handleSave() {
+ 
+  const dataToSave = {
+    ...formData,
+    applied_at: formData.appliedAt
+  };
+
+  delete dataToSave.appliedAt;
+  
+  onEdit(dataToSave);
+  setIsEditOpen(false);
+  setIsMenuOpen(false);
+}
+
+
 
   return (
     <>
@@ -234,6 +262,7 @@ export default function ApplicationCard({   company,
                   value={formData.appliedAt}
                   onChange={handleChange}
                   type="date"
+                  max={new Date().toISOString().split('T')[0]}  // prevebnting future dates
                 />
               </div>
 

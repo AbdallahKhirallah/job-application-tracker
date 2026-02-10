@@ -1,12 +1,12 @@
 -- ============================================
 --    JOB TRACKER DATABASE SCHEMA
 -- ============================================
--- This file contains all the SQL commands to create the database tables
+-- This file contains the SQL commands to create the database tables
 
--- Step 1: Create the database (run this first in pgAdmin or psql)
--- CREATE DATABASE job_tracker;
 
--- Step 2: Connect to the database, then run the commands below
+
+
+
 
 -- ============================================
 -- USERS TABLE
@@ -54,36 +54,3 @@ CREATE INDEX IF NOT EXISTS idx_applications_user_id ON applications(user_id);
 -- Add an index on status for faster filtering by status
 CREATE INDEX IF NOT EXISTS idx_applications_status ON applications(status);
 
--- ==================================
--- EXPLANATION 
--- ==================================
-
--- SERIAL: Auto-incrementing integer (PostgreSQL specific)
---   - Automatically generates: 1, 2, 3, 4, 5...
---   - Perfect for primary keys
-
--- PRIMARY KEY: Unique identifier for each row
---   * No two rows can have the same primary key
---   * Automatically indexed for fast lookups
-
--- FOREIGN KEY: Links two tables together
---   * user_id in applications table references id in users table
---   * Maintains data integrity (can't have applications without a user)
-
--- ON DELETE CASCADE: Automatic cleanup
---   * If a user is deleted, all their applications are automatically deleted
---   * Prevents orphaned data
-
--- TIMESTAMP: Stores date and time
---   * DEFAULT CURRENT_TIMESTAMP automatically sets the current date/time
-
--- VARCHAR(n): Variable-length text with max length
---   * VARCHAR(100) can store up to 100 characters
---   * More efficient than TEXT for short strings
-
--- TEXT: Unlimited length text
---   * Good for notes, descriptions, etc.
-
--- INDEXES: Speed up searches
---   * Like a book index - helps find data faster
---   * Trade-off: slightly slower writes, much faster reads

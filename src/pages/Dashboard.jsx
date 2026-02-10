@@ -102,6 +102,14 @@ async function handleCreateSubmit(e) {
     return;
   }
 
+    // Validating the Applied date so it cant be in the future
+  if (createFormData.applied_at && new Date(createFormData.applied_at) > new Date()) {
+    setCreateError("Applied date cannot be in the future");
+    setCreateLoading(false);
+    return;
+  }
+
+
   try {
     const newApplication = await applicationsAPI.create(createFormData);
     setApplications((prev) => [newApplication, ...prev]);
@@ -373,6 +381,7 @@ return (
                 value={createFormData.applied_at}
                 onChange={handleCreateChange}
                 type="date"
+                max={new Date().toISOString().split('T')[0]}
                 disabled={createLoading}
               />
             </div>
