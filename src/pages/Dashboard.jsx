@@ -1,7 +1,12 @@
-import { useState , useRef , useEffect  } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import ApplicationCard from "../components/ApplicationCard/ApplicationCard"
 import "./Dashboard.css";
 import { applicationsAPI } from "../services/api";
+
+
+
+// Filtering statuses
+const STATUS_OPTIONS = ["applied", "interview", "offer", "rejected"];
 
 
 
@@ -36,6 +41,16 @@ const [createLoading, setCreateLoading] = useState(false);
 
   const expandedCardRef = useRef(null);
 
+const filterHoverTimeout = useRef(null);
+
+// ----------------- Filter states ---------------------
+const [isFilterOpen, setIsFilterOpen] = useState(false);
+const [filterSearch, setFilterSearch] = useState("");
+const [filterStatuses, setFilterStatuses] = useState([]);
+const [filterDateFrom, setFilterDateFrom] = useState("");
+const [filterDateTo, setFilterDateTo] = useState("");
+
+
 
 
   // Fetching applications when user logs in
@@ -59,6 +74,73 @@ async function fetchApplications() {
     setLoading(false);
   }
 }
+
+
+
+
+// ── Filtered applications (derived) ───────────
+const filteredApplications = useMemo(() => {
+
+  return applications.filter((app) => {
+    if (filterSearch.trim()) {
+
+      const q = filterSearch.trim().toLowerCase();
+      if (!app.company?.toLowerCase().includes(q) &&
+          !app.role?.toLowerCase().includes(q)) return false;
+    }
+
+    if (filterStatuses.length > 0) {
+      if (!filterStatuses.includes(app.status)) return false;
+    }
+    if (filterDateFrom) {
+      const appDate = app.applied_at ? new Date(app.applied_at) : null;
+      if (!appDate || appDate < new Date(filterDateFrom)) return false;
+    }
+    if (filterDateTo) {
+      const appDate = app.applied_at ? new Date(app.applied_at) : null;
+      if (!appDate || appDate > new Date(filterDateTo)) return false;
+    }
+    return true;
+  });
+
+}, [applications, filterSearch, filterStatuses, filterDateFrom, filterDateTo]);
+
+const activeFilterCount =
+  (filterSearch.trim() ? 1 : 0) +
+  filterStatuses.length +
+  (filterDateFrom ? 1 : 0) +
+  (filterDateTo ? 1 : 0);
+
+function toggleStatus(s) {
+  setFilterStatuses((prev) =>
+    prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
+  );
+}
+
+// To cleanr filters
+function clearAllFilters() {
+  setFilterSearch("");
+  setFilterStatuses([]);
+  setFilterDateFrom("");
+  setFilterDateTo("");
+}
+
+const activeChips = [
+  ...(filterSearch.trim()
+    ? [{ label: `"${filterSearch.trim()}"`, onRemove: () => setFilterSearch("") }]
+    : []),
+  ...filterStatuses.map((s) => ({
+    label: s, status: s, onRemove: () => toggleStatus(s),
+  })),
+  ...(filterDateFrom
+    ? [{ label: `From ${filterDateFrom}`, onRemove: () => setFilterDateFrom("") }]
+    : []),
+  ...(filterDateTo
+    ? [{ label: `To ${filterDateTo}`, onRemove: () => setFilterDateTo("") }]
+    : []),
+];
+
+
 
 
 
@@ -186,6 +268,7 @@ async function handleUpdateApplication(id, updatedData) {
             with clarity.
           </p>
 
+
           {/* Enhanced CTAs */}
           <div className="dashboard-cta">
             <button 
@@ -211,6 +294,7 @@ async function handleUpdateApplication(id, updatedData) {
             </button>
           </div>
 
+
           {/* Enhanced glassmorphic Cards */}
           <div className="ghost-grid">
             {[1, 2, 3].map((i) => (
@@ -222,53 +306,176 @@ async function handleUpdateApplication(id, updatedData) {
     );
   }
 
-  // The Logged-in view (rendering existing cards from db)
+
+// The Logged-in view
 return (
   <main className="dashboard">
     <div className="dashboard-container">
+
+      {/* Header with expanding filter bar */}
       <div className="dashboard-header">
         <h1 className="dashboard-title">Applications</h1>
-        <button
-          className="btn-primary"
-          onClick={() => setIsCreateOpen(true)}
-        >
-          + Add Application
-        </button>
+        <div className="dashboard-header-actions">
+
+
+          {/*The Hover-expanding filter bar */}
+
+          <div
+            className="filter-bar"
+            onMouseEnter={() => {
+              filterHoverTimeout.current = setTimeout(() => setIsFilterOpen(true), 60);
+            }}
+            onMouseLeave={() => {
+              clearTimeout(filterHoverTimeout.current);
+              setIsFilterOpen(false);
+            }}
+          >
+            {/* Icon trigger */}
+            <button className="filter-trigger" tabIndex={-1}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 2.5h12M3 7h8M5 11.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+
+              {!isFilterOpen && activeFilterCount > 0 && (
+                <span className="filter-badge">{activeFilterCount}</span>
+              )}
+            </button>
+
+            {/* Controls ,  revealed on hover */}
+            <div className="filter-bar-controls">
+              <div className="filter-bar-divider" />
+
+              {/* Search */}
+              <div className="filter-search-wrap">
+                <svg className="filter-search-icon" width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" strokeWidth="1.4"/>
+                  <path d="M8.5 8.5L11 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+                <input
+                  className="filter-input filter-search-input"
+                  type="text"
+                  placeholder="Company or role…"
+                  value={filterSearch}
+                  onChange={(e) => setFilterSearch(e.target.value)}
+                />
+                {filterSearch && (
+                  <button className="filter-clear-input" onClick={() => setFilterSearch("")}>×</button>
+                )}
+              </div>
+
+              <div className="filter-bar-divider" />
+
+              {/* Status pills */}
+              <div className="filter-status-pills">
+                {STATUS_OPTIONS.map((s) => (
+                  <button
+                    key={s}
+                    className={`filter-status-pill status-pill-${s} ${filterStatuses.includes(s) ? "selected" : ""}`}
+                    onClick={() => toggleStatus(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              <div className="filter-bar-divider" />
+
+              {/* Date range */}
+
+              <div className="filter-date-row">
+                <input
+                  className="filter-input filter-date-input"
+                  type="date"
+                  value={filterDateFrom}
+                  max={filterDateTo || undefined}
+                  onChange={(e) => setFilterDateFrom(e.target.value)}
+                />
+                <span className="filter-date-arrow">→</span>
+                <input
+                  className="filter-input filter-date-input"
+                  type="date"
+                  value={filterDateTo}
+                  min={filterDateFrom || undefined}
+                  onChange={(e) => setFilterDateTo(e.target.value)}
+                />
+              </div>
+
+              {activeFilterCount > 0 && (
+                <>
+                  <div className="filter-bar-divider" />
+                  <button className="filter-clear-all" onClick={clearAllFilters}>
+                    Clear
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <button className="btn-primary" onClick={() => setIsCreateOpen(true)}>
+            + Add Application
+          </button>
+        </div>
       </div>
 
-      {/* Loading State */}
+
+      {/* Active filter chips */}
+      {activeChips.length > 0 && (
+
+        <div className="filter-chips-row">
+          {activeChips.map((chip, i) => (
+            <span key={i} className={`filter-chip ${chip.status ? `filter-chip-${chip.status}` : ""}`}>
+              {chip.label}
+              <button className="filter-chip-remove" onClick={chip.onRemove}>×</button>
+            </span>
+          ))}
+        </div>
+
+      )}
+
+
+      {/* Loading*/}
       {loading && (
         <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
+          <div className="loading-spinner" />
           <p>Loading applications...</p>
         </div>
       )}
 
-      {/* Error State */}
+      {/* Error */}
       {error && (
         <div className="dashboard-error">
           <p>Error: {error}</p>
-          <button className="btn-secondary" onClick={fetchApplications}>
-            Try Again
+          <button className="btn-secondary" onClick={fetchApplications}>Try Again</button>
+        </div>
+      )}
+
+
+      {/* Empty ,  no applications at all */}
+      {!loading && !error && applications.length === 0 && (
+        <div className="dashboard-empty">
+          <p className="empty-message">No applications yet</p>
+          <p className="empty-subtitle">Click "Add Application" to track your first internship application</p>
+        </div>
+      )}
+
+
+      {/* Empty , filters produced no results */}
+      {!loading && !error && applications.length > 0 && filteredApplications.length === 0 && (
+        <div className="dashboard-empty filter-no-results">
+          <p className="empty-message">No matches</p>
+          <p className="empty-subtitle">Try adjusting or clearing your filters</p>
+          <button className="btn-secondary" style={{ marginTop: "12px" }} onClick={clearAllFilters}>
+            Clear filters
           </button>
         </div>
       )}
 
-      {/* Empty State */}
-      {!loading && !error && applications.length === 0 && (
-        <div className="dashboard-empty">
-          <p className="empty-message">No applications yet</p>
-          <p className="empty-subtitle">
-            Click "Add Application" to track your first internship application
-          </p>
-        </div>
-      )}
-
-      {/* Applications Grid */}
-      {!loading && !error && applications.length > 0 && (
+      {/* Applications grid */}
+      {!loading && !error && filteredApplications.length > 0 && (
         <div className="dashboard-grid">
-          {applications.map((app) => (
+          {filteredApplications.map((app) => (
             <ApplicationCard
+
               key={app.id}
               id={app.id}
               company={app.company}
@@ -279,73 +486,38 @@ return (
               source={app.source}
               notes={app.notes}
               isExpanded={expandedId === app.id}
-              onToggle={() =>
-                setExpandedId((prev) => (prev === app.id ? null : app.id))
-              }
+              onToggle={() => setExpandedId((prev) => (prev === app.id ? null : app.id))}
               onDelete={() => handleDeleteApplication(app.id)}
-              onEdit={(updatedData) =>
-                handleUpdateApplication(app.id, updatedData)
-              }
+              onEdit={(updatedData) => handleUpdateApplication(app.id, updatedData)}
               cardRef={expandedId === app.id ? expandedCardRef : null}
+
             />
           ))}
         </div>
       )}
     </div>
 
-
-
-
-  {/* ---------------------------*/}
-  {/*THE APPLICATION MODAL */}
-  {/* ---------------------------*/}
-
+    {/* Add Application Modal*/}
     {isCreateOpen && (
       <div className="confirm-overlay" onClick={() => setIsCreateOpen(false)}>
-        <div
-          className="confirm-dialog edit-dialog"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="confirm-dialog edit-dialog" onClick={(e) => e.stopPropagation()}>
           <h3>Add New Application</h3>
 
-
           <form className="auth-form" onSubmit={handleCreateSubmit}>
+
             <div className="auth-field">
               <label>Company *</label>
-              <input
-                name="company"
-                value={createFormData.company}
-                 onChange={handleCreateChange}
-                type="text"
-                placeholder="e.g., Google"
-                required
-                disabled={createLoading}
-              />
+              <input name="company" value={createFormData.company} onChange={handleCreateChange} type="text" placeholder="e.g., Google" required disabled={createLoading} />
             </div>
 
             <div className="auth-field">
               <label>Role *</label>
-               
-              <input
-                name="role"
-                value={createFormData.role}
-                onChange={handleCreateChange}
-                type="text"
-                placeholder="e.g., Software Engineer Intern"
-                required
-                disabled={createLoading}
-              />
+              <input name="role" value={createFormData.role} onChange={handleCreateChange} type="text" placeholder="e.g., Software Engineer Intern" required disabled={createLoading} />
             </div>
 
             <div className="auth-field">
               <label>Status</label>
-              <select
-
-                name="status"
-                value={createFormData.status}
-                onChange={handleCreateChange}
-                disabled={createLoading}
-              >
+              <select name="status" value={createFormData.status} onChange={handleCreateChange} disabled={createLoading}>
                 <option value="applied">Applied</option>
                 <option value="interview">Interview</option>
                 <option value="offer">Offer</option>
@@ -355,72 +527,29 @@ return (
 
             <div className="auth-field">
               <label>Location</label>
-              <input
-                name="location"
-                value={createFormData.location}
-                 onChange={handleCreateChange}
-                type="text"
-                 placeholder="e.g., Remote, New York"
-                disabled={createLoading}
-              />
+              <input name="location" value={createFormData.location} onChange={handleCreateChange} type="text" placeholder="e.g., Remote, New York" disabled={createLoading} />
             </div>
-
-
             <div className="auth-field">
               <label>Source</label>
-              <input
-                  name="source"
-                value={createFormData.source}
-                onChange={handleCreateChange}
-                type="text"
-                placeholder="e.g., LinkedIn"
-                 disabled={createLoading}
-              />
+              <input name="source" value={createFormData.source} onChange={handleCreateChange} type="text" placeholder="e.g., LinkedIn" disabled={createLoading} />
             </div>
-
 
             <div className="auth-field">
               <label>Notes</label>
-              <textarea
-
-                name="notes"
-                value={createFormData.notes}
-                 onChange={handleCreateChange}
-                rows="3"
-                placeholder="Any additional details..."
-                disabled={createLoading}
-              />
-
+              <textarea name="notes" value={createFormData.notes} onChange={handleCreateChange} rows="3" placeholder="Any additional details..." disabled={createLoading} />
             </div>
 
-            {createError && (
-              <div className="form-error-message">
-                {createError}
-              </div>
-            )}
-
+            {createError && <div className="form-error-message">{createError}</div>}
             <div className="confirm-actions">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setIsCreateOpen(false)}
-                disabled={createLoading}
-              >
-                Cancel
-              </button>
-
-
-              <button type="submit" className="btn-primary" disabled={createLoading}>
-                {createLoading ? "Creating..." : "Create"}
-              </button>
+              <button type="button" className="btn-secondary" onClick={() => setIsCreateOpen(false)} disabled={createLoading}>Cancel</button>
+              <button type="submit" className="btn-primary" disabled={createLoading}>{createLoading ? "Creating..." : "Create"}</button>
             </div>
           </form>
         </div>
       </div>
     )}
 
-
-  </main> // end of Dashboard main
+  </main>
 );
 } // end of Dashboard function
 
