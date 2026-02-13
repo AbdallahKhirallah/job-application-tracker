@@ -78,9 +78,18 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
       if (filterStatuses.length > 0) {
         if (!filterStatuses.includes(app.status)) return false;
       }
+
       if (filterDateFrom) {
         const appDate = app.applied_at ? new Date(app.applied_at) : null;
-        if (!appDate || appDate < new Date(filterDateFrom)) return false;
+        const filterDate = new Date(filterDateFrom);
+        filterDate.setHours(0, 0, 0, 0); // Set to start of day
+
+        if (!appDate) return false;
+
+        const appDateOnly = new Date(appDate);
+        appDateOnly.setHours(0, 0, 0, 0); // Compare dates only, ignore time
+
+        if (appDateOnly < filterDate) return false;
       }
 
       return true;
@@ -165,9 +174,19 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
       setCreateLoading(false);
       return;
     }
-
     try {
-      const newApplication = await applicationsAPI.create(createFormData);
+      // Adding today's date to the form data (local timezone)
+      const today = new Date();
+      const localDate = new Date(
+        today.getTime() - today.getTimezoneOffset() * 60000,
+      );
+
+      const dataToSubmit = {
+        ...createFormData,
+        applied_at: localDate.toISOString().split("T")[0], // format : YYYY-MM-DD
+      };
+
+      const newApplication = await applicationsAPI.create(dataToSubmit);
       setApplications((prev) => [newApplication, ...prev]);
 
       setCreateFormData({

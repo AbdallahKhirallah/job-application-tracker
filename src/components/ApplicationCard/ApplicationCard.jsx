@@ -70,7 +70,7 @@ export default function ApplicationCard({
       today.setHours(0, 0, 0, 0);
 
       if (selectedDate > today) {
-        return; // Don't update if future date
+        return; // Do not update if future date
       }
     }
 
@@ -142,6 +142,14 @@ export default function ApplicationCard({
               <span className="detail-value">{location}</span>
             </div>
 
+            <div className="detail-row">
+              <span className="detail-label">Created</span>
+              <span className="detail-value">
+                {appliedAt
+                  ? new Date(appliedAt).toLocaleDateString("en-US")
+                  : "N/A"}
+              </span>
+            </div>
 
             <div className="detail-row">
               <span className="detail-label">Source</span>
@@ -235,7 +243,6 @@ export default function ApplicationCard({
                   type="text"
                 />
               </div>
-
 
               <div className="auth-field">
                 <label>Source</label>
