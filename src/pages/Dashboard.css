@@ -126,9 +126,14 @@
 }
 
 .filter-date-input {
-  width: 118px;  
+  width: 28px;
+  height: 28px;
   color-scheme: dark;
   cursor: pointer;
+  padding: 0;
+  position: relative;
+  font-size: 0;           /* Added - hides all text */
+  color: transparent;     /* Added - makes text invisible */
 }
 
 /* Mirror shine overlay */
@@ -567,6 +572,7 @@
   white-space: nowrap;
 }
 
+
 .filter-bar:hover .filter-trigger {
   color: var(--accent-rose);
 }
@@ -737,7 +743,21 @@
   cursor: pointer;
   padding: 0;
   position: relative;
-  
+  overflow: hidden;         
+  text-indent: -9999px;     
+  line-height: 28px;          
+}
+
+.filter-date-input::-webkit-datetime-edit {
+  display: none !important;
+}
+
+.filter-date-input::before {
+  content: none !important;
+}
+
+.filter-date-input::after {
+  content: none !important;
 }
 
 /* Make the calendar icon visible and clickable */

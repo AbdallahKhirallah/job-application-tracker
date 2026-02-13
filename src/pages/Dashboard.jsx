@@ -40,7 +40,6 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const [filterSearch, setFilterSearch] = useState("");
   const [filterStatuses, setFilterStatuses] = useState([]);
   const [filterDateFrom, setFilterDateFrom] = useState("");
-  const [filterDateTo, setFilterDateTo] = useState("");
 
   // Fetching applications when user logs in
   useEffect(() => {
@@ -83,25 +82,15 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
         const appDate = app.applied_at ? new Date(app.applied_at) : null;
         if (!appDate || appDate < new Date(filterDateFrom)) return false;
       }
-      if (filterDateTo) {
-        const appDate = app.applied_at ? new Date(app.applied_at) : null;
-        if (!appDate || appDate > new Date(filterDateTo)) return false;
-      }
+
       return true;
     });
-  }, [
-    applications,
-    filterSearch,
-    filterStatuses,
-    filterDateFrom,
-    filterDateTo,
-  ]);
+  }, [applications, filterSearch, filterStatuses, filterDateFrom]);
 
   const activeFilterCount =
     (filterSearch.trim() ? 1 : 0) +
     filterStatuses.length +
-    (filterDateFrom ? 1 : 0) +
-    (filterDateTo ? 1 : 0);
+    (filterDateFrom ? 1 : 0);
 
   function toggleStatus(s) {
     setFilterStatuses((prev) =>
@@ -114,7 +103,6 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
     setFilterSearch("");
     setFilterStatuses([]);
     setFilterDateFrom("");
-    setFilterDateTo("");
   }
 
   const activeChips = [
@@ -138,9 +126,6 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
             onRemove: () => setFilterDateFrom(""),
           },
         ]
-      : []),
-    ...(filterDateTo
-      ? [{ label: `To ${filterDateTo}`, onRemove: () => setFilterDateTo("") }]
       : []),
   ];
 
@@ -324,7 +309,6 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
                 setIsFilterOpen(false);
               }}
             >
-              
               {/* Icon trigger */}
               <button className="filter-trigger" tabIndex={-1}>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -404,25 +388,14 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
 
                 <div className="filter-bar-divider" />
 
-                {/* Date range */}
+                {/* Date filter */}
 
-                <div className="filter-date-row">
-                  <input
-                    className="filter-input filter-date-input"
-                    type="date"
-                    value={filterDateFrom}
-                    max={filterDateTo || undefined}
-                    onChange={(e) => setFilterDateFrom(e.target.value)}
-                  />
-                  <span className="filter-date-arrow">→</span>
-                  <input
-                    className="filter-input filter-date-input"
-                    type="date"
-                    value={filterDateTo}
-                    min={filterDateFrom || undefined}
-                    onChange={(e) => setFilterDateTo(e.target.value)}
-                  />
-                </div>
+                <input
+                  className="filter-input filter-date-input"
+                  type="date"
+                  value={filterDateFrom}
+                  onChange={(e) => setFilterDateFrom(e.target.value)}
+                />
 
                 {activeFilterCount > 0 && (
                   <>
