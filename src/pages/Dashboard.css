@@ -520,7 +520,7 @@
   display: flex;
   align-items: center;
   height: 44px;
-  max-width: 44px;                /* an icon only when collapsed */
+  max-width: 90px;                
   overflow: hidden;
   background: var(--bg-elevated);
   border: 1px solid rgba(139, 131, 120, 0.2);
@@ -544,11 +544,13 @@
 
 .filter-trigger {
   flex-shrink: 0;
-  width: 40px;
+  width: auto;           /* Changed from 40px */
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;              /* Added gap between icon and text */
+  padding: 0 12px;       /* Added horizontal padding */
   position: relative;
   background: transparent;
   border: none;
@@ -557,6 +559,12 @@
   cursor: pointer;
   transition: color 200ms ease;
   pointer-events: none;
+}
+
+.filter-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .filter-bar:hover .filter-trigger {
