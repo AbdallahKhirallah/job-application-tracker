@@ -79,17 +79,13 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
         if (!filterStatuses.includes(app.status)) return false;
       }
 
-      if (filterDateFrom) {
-        const appDate = app.applied_at ? new Date(app.applied_at) : null;
-        const filterDate = new Date(filterDateFrom);
-        filterDate.setHours(0, 0, 0, 0); // Set to start of day
-
-        if (!appDate) return false;
-
-        const appDateOnly = new Date(appDate);
-        appDateOnly.setHours(0, 0, 0, 0); // Compare dates only, ignore time
-
-        if (appDateOnly < filterDate) return false;
+if (filterDateFrom) {
+        if (!app.applied_at) return false;
+        
+        //  string comparison works for YYYY-MM-DD format
+        const appDate = app.applied_at.split('T')[0]; // extracting date part only
+        
+        if (appDate < filterDateFrom) return false;
       }
 
       return true;
