@@ -13,7 +13,7 @@ function App() {
 
   //Modal states
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState("register"); // switches between "register" / "login"
+  const [authMode, setAuthMode] = useState("register"); // switches between register & login
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ function App() {
 
   function handleSaveProfile(updatedUser) {
     setUser(updatedUser);
-    // TO DO : ********** Call API to update user profile on backend************
+    //to do :  ********** Call API to update user profile on backend************
   }
 
   return (

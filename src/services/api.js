@@ -166,6 +166,17 @@ export const authAPI = {
     return getUser();
     
   },
+
+  // Changing password for logged user
+changePassword: async (currentPassword, newPassword) => {
+
+  const data = await apiRequest('/auth/change-password', {
+    method: 'PUT',        
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  return data;
+},
+
 };
 
 
