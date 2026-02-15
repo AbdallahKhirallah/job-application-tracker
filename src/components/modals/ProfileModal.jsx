@@ -171,12 +171,14 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
             )}
 
             {/*Change password */}
-            <button
-              className="btn-secondary"
-              onClick={() => setIsChangingPassword(true)}
-            >
-              Change Password
-            </button>
+            {!isChangingPassword && (
+              <button
+                className="btn-secondary"
+                onClick={() => setIsChangingPassword(true)}
+              >
+                Change Password
+              </button>
+            )}
           </div>
         )}
 
@@ -190,7 +192,7 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
             </button>
           )}
 
-          {isEditing && (
+          {isEditing && !isChangingPassword && (
             <>
               <button className="btn-primary" onClick={handleSave}>
                 Save
