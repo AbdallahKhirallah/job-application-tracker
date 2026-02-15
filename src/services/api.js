@@ -4,7 +4,7 @@
 //This file handles all communication with the backend API
 
 // Base URL for backend API
-const API_URL = 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 // ============================================
 // HELPER FUNCTIONS
