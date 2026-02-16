@@ -5,7 +5,7 @@
 
 const express = require('express');
 const pool = require('../config/database');
-const authenticateToken = require('../middleware/auth');
+const authenticateToken = require('../middleware/authenticateToken');
 
 // Creating a router to handle application routes
 const router = express.Router();

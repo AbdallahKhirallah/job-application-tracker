@@ -177,6 +177,20 @@ changePassword: async (currentPassword, newPassword) => {
   return data;
 },
 
+
+// updating user profile
+updateProfile: async (name, email) => {
+  const data = await apiRequest('/auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify({ name, email }),
+  });
+  
+  // update localStorage with new user data
+  setUser(data.user);
+  
+  return data;
+},
+
 };
 
 

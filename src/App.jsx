@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import Navbar from "./layout/Navbar";
 import Dashboard from "./pages/Dashboard";
-import AuthModal from "./components/modals/AuthModal"
-import ProfileModal from "./components/modals/ProfileModal"
+import AuthModal from "./components/modals/AuthModal";
+import ProfileModal from "./components/modals/ProfileModal";
 import { authAPI } from "./services/api";
-import './index.css' 
+import "./index.css";
 
 function App() {
   // Authentification states
@@ -54,9 +54,17 @@ function App() {
     setIsProfileOpen(false);
   }
 
-  function handleSaveProfile(updatedUser) {
-    setUser(updatedUser);
-    //to do :  ********** Call API to update user profile on backend************
+  async function handleSaveProfile(updatedUser) {
+    try {
+      const data = await authAPI.updateProfile(
+        updatedUser.name,
+        updatedUser.email,
+      );
+      setUser(data.user);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert(error.message || "Failed to update profile");
+    }
   }
 
   return (

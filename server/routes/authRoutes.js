@@ -1,4 +1,3 @@
-const authenticateToken = require('../middleware/auth');
 
 // ========================================
 // AUTHENTICATION ROUTES
@@ -9,6 +8,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs'); //For hashing
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
+const authenticateToken = require('../middleware/authenticateToken');
 
 
 // Creating a router to handle specific routes
@@ -242,18 +242,60 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
 
 
+// ========================================
+//     UPDATE PROFILE ROUTE
+// =======================================
+// PUT /api/auth/profile
 
+router.put('/profile', authenticateToken, async (req, res) => {
+  try {
+    const { name, email } = req.body;
 
+    if (!name || !email) {
+      return res.status(400).json({ 
+        message: 'Name and email are required' 
+      });
+    }
 
+    // Checking email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ 
+        message: 'Please provide a valid email address' 
+      });
+    }
 
+    // Checking if email is already taken by another user
+    const emailExists = await pool.query(
+      'SELECT * FROM users WHERE email = $1 AND id != $2',
+      [email, req.userId]
+    );
 
+    if (emailExists.rows.length > 0) {
+      return res.status(400).json({ 
+        message: 'Email is already in use' 
+      });
+    }
 
+    // Update user
+    const updatedUser = await pool.query(
+      'UPDATE users SET name = $1, email = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id, name, email',
+      [name, email, req.userId]
+    );
 
+    res.json({
+      message: 'Profile updated successfully',
+      user: updatedUser.rows[0]
+    });
 
-
-
-
-
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ 
+      message: 'Error updating profile',
+      error: error.message 
+    });
+  }
+});
 
 
 
