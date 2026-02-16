@@ -81,6 +81,7 @@ function App() {
         mode={authMode}
         onClose={closeAuth}
         onLoginSuccess={handleLoginSuccess}
+        onOpenAuth={openAuth}
       />
       <ProfileModal
         isOpen={isProfileOpen}

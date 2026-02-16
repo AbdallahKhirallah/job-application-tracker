@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { authAPI } from "../../services/api";
 
-export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess }) {
+export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess, onOpenAuth  }) {
   const [shouldRender, setShouldRender] = useState(isOpen);
 
   const [formData, setFormData] = useState({
@@ -121,6 +121,27 @@ export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess }) {
               }}
             >
               {error}
+              {error.includes("already exists") && mode === "register" && (
+                <>
+                  {" "}
+                  <span
+                    style={{
+                      color: "var(--accent-rose)",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setError("");
+                      onClose();
+                      setTimeout(() => {
+                        onOpenAuth("login");
+                      }, 100);
+                    }}
+                  >
+                    Login instead?
+                  </span>
+                </>
+              )}
             </div>
           )}
 
