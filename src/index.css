@@ -433,7 +433,40 @@ button:focus-visible {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  margin-top: 20px;
 }
+
+.auth-field textarea:focus {
+  outline: none;
+  background-color: var(--bg-navbar);
+  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
+}
+
+/* For select dropdowns */
+.auth-field select {
+  background: var(--bg-elevated);
+  border: none;
+  border-radius: var(--radius-sm);
+
+  padding: 11px 12px;
+  font-size: 0.95rem;
+
+  color: var(--text-primary);
+  cursor: pointer;
+
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.auth-field select:focus {
+  outline: none;
+  background-color: var(--bg-navbar);
+  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
+}
+
+
+
 
 .btn-danger {
   background-color: rgba(168, 104, 104, 0.2);
@@ -478,20 +511,7 @@ button:focus-visible {
   color: var(--text-primary);
 }
 
-.detail-notes {
-  font-size: 0.8rem;
-}
-
-.detail-notes .detail-label {
-  color: var(--text-secondary);
-}
-
-.detail-notes p {
-  margin: 4px 0 0;
-  line-height: 1.4;
-  color: var(--text-primary);
-}
-
+/*Notes styles*/
 .detail-notes {
   font-size: 0.8rem;
   padding-top: 12px;
@@ -511,6 +531,9 @@ button:focus-visible {
   line-height: 1.5;
   color: var(--text-primary);
 }
+
+
+
 
 /* =========================
  AUTH MODAL (REGISTER / LOGIN)
@@ -596,6 +619,32 @@ button:focus-visible {
   background-color: var(--bg-navbar);
   box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
 }
+
+
+/* Add this new rule for textareas */
+.auth-field textarea {
+  background: var(--bg-elevated);
+  border: none;
+  border-radius: var(--radius-sm);
+
+  padding: 11px 12px;
+  font-size: 0.95rem;
+
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: vertical;
+
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.auth-field textarea:focus {
+  outline: none;
+  background-color: var(--bg-navbar);
+  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
+}
+
 
 /*Action buttons container */
 .auth-actions {
