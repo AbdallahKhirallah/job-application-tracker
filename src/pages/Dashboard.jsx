@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import ApplicationCard from "../components/ApplicationCard/ApplicationCard";
 import "./Dashboard.css";
+import "../../styles/buttons.css";
 import { applicationsAPI } from "../services/api";
 
 // Filtering statuses

@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import "./ApplicationCard.css";
+
 
 export default function ApplicationCard({
   company,

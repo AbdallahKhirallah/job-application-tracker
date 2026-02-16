@@ -1,5 +1,5 @@
 /* =========================
-   GLOBAL DESIGN TOKENS
+      GLOBAL DESIGN TOKENS
    ========================= */
 
 :root {
@@ -30,7 +30,7 @@
 }
 
 /* =========================
-   BASE STYLES
+       BASE STYLES
    ========================= */
 
 *,
@@ -55,17 +55,20 @@ a {
 button {
   font-family: inherit;
 }
+
 .app {
   min-height: 100vh;
   padding-top: 96px;  /* space for floating navbar */
 }
 
-
-
-
+input:focus,
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(179, 140, 164, 0.45);
+}
 
 /* =========================
-  Logged-out Dashboard buttons
+        BUTTON STYLES 
    ========================== */
 
 /* Dashboard Login button  */
@@ -105,129 +108,18 @@ button {
   font-size: 0.95rem;
 }
 
-
-/* =========================
-   APPLICATION CARD
-   ========================= */
-
-.app-card {
-  background-color: var(--bg-surface);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
-    0 12px 28px rgba(0, 0, 0, 0.35);
-
-  transition:
-    background-color 240ms ease,
-    transform 240ms ease,
-    box-shadow 240ms ease;
-}
-
-.app-card-divider {
-  height: 1px;
-  margin: 6px 0;
-  background-color: rgba(139, 131, 120, 0.25);
-}
-
-
-.app-card:hover {
-  background-color: var(--bg-elevated);
-  transform: translateY(-2px);
-    box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 12px 28px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(179, 140, 164, 0.25);
-}
-
-input:focus,
-button:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(179, 140, 164, 0.45);
-}
-
-.app-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.app-card-company {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0;
-  letter-spacing: 0.2px;
-}
-
-.app-card-body {
-  color: var(--text-secondary);
-}
-
-.app-card-footer {
-  font-size: 0.75rem;
-  color: var(--accent-warm);
-  opacity: 0.8;
-}
-
-
-.app-card-role {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-
-
-.status-badge {
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  opacity: 0.9;
-}
-
-/*Status variants */
-.status-applied {
-  background-color: rgba(122, 140, 163, 0.15);
-  color: var(--status-applied);
-}
-
-.status-interview {
-  background-color: rgba(196, 162, 90, 0.18);
-  color: var(--status-interview);
-}
-
-.status-offer {
-  background-color: rgba(111, 175, 138, 0.18);
-  color: var(--status-offer);
-}
-
-.status-rejected {
-  background-color: rgba(168, 104, 104, 0.18);
+.btn-danger {
+  background-color: rgba(168, 104, 104, 0.2);
   color: var(--status-rejected);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 180ms ease;
 }
 
-/* Card grid */
-.dashboard-grid {
-  display: grid;
-  align-items: start;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 22px;
-  margin-top: 32px;
-}
-
-.status-badge {
-  position: absolute;
-  top: 16px;
-  right: 16px;
+.btn-danger:hover {
+  background-color: rgba(168, 104, 104, 0.35);
 }
 
 /* =========================
@@ -243,147 +135,90 @@ button:focus-visible {
   margin: 0 auto;
   padding: 0 28px;
 }
+
 .dashboard-title {
   margin-bottom: 28px;
 }
 
-
-/* =========================
-  CARD ACTION AFFORDANCE
-  =========================*/
-
-.card-menu-btn {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-
-  width: 40px;
-  height: 40px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-  cursor: pointer;
-
-  opacity: 0;
-  transform: translateY(2px);
-
-  z-index: 5;
-
-  transition:
-    opacity 200ms ease,
-    transform 200ms ease,
-    background-color 160ms ease,
-    color 160ms ease;
-}
-
-
-
-.app-card:hover .card-menu-btn {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.card-menu-btn:hover {
-  color: var(--accent-warm);
-}
-
-
-.app-card-toggle {
-  background: none;
-  border: none;
-  padding: 0;
-
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  transition:
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.app-card-toggle:hover {
-  color: var(--text-primary);
-  transform: translateY(-1px);
+/* Card grid */
+.dashboard-grid {
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+  margin-top: 32px;
 }
 
 /* =========================
-   CARD ACTIONS MENU
+   DASHBOARD STATES
    ========================= */
 
-.card-actions-menu {
-  position: absolute;
-  bottom: 48px;
-  right: 14px;
-
-  background-color: var(--bg-surface);
-  border-radius: var(--radius-md);
-  padding: 6px;
-  min-width: 140px;
-
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-
+.dashboard-loading {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-
-  opacity: 0;
-  transform: translateY(6px);
-  pointer-events: none;
-
-  transition:
-    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
-
-  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
 }
 
-.card-actions-menu.open {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bg-elevated);
+  border-top-color: var(--accent-rose);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
+.dashboard-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px 20px;
+  text-align: center;
+}
 
-.card-action-item {
-  background: transparent;
-  border: none;
-  text-align: left;
+.dashboard-error p {
+  color: var(--status-rejected);
+  margin: 0;
+}
 
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
+.dashboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
 
-  font-size: 0.85rem;
+.empty-message {
+  font-size: 1.2rem;
+  margin: 0 0 8px;
   color: var(--text-primary);
-  cursor: pointer;
-
-  transition:
-    background-color 160ms ease,
-    color 160ms ease;
 }
 
-.card-action-item:hover {
-  background-color: var(--bg-elevated);
+.empty-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 400px;
 }
 
+.form-error-message {
+  color: var(--status-rejected);
+  font-size: 0.85rem;
+  margin-top: -8px;
+}
 
 /* =========================
- DELETE CONFIRMATION DIALOG
+ MODAL & DIALOG STYLES
    ========================= */
 
 .confirm-overlay {
@@ -402,7 +237,6 @@ button:focus-visible {
   z-index: 9999;
   pointer-events: auto;
 }
-
 
 .confirm-dialog {
   background-color: var(--bg-surface);
@@ -436,149 +270,7 @@ button:focus-visible {
   margin-top: 20px;
 }
 
-.auth-field textarea:focus {
-  outline: none;
-  background-color: var(--bg-navbar);
-  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
-}
-
-/* For select dropdowns */
-.auth-field select {
-  background: var(--bg-elevated);
-  border: none;
-  border-radius: var(--radius-sm);
-
-  padding: 11px 12px;
-  font-size: 0.95rem;
-
-  color: var(--text-primary);
-  cursor: pointer;
-
-  transition:
-    background-color 200ms ease,
-    box-shadow 200ms ease;
-}
-
-.auth-field select:focus {
-  outline: none;
-  background-color: var(--bg-navbar);
-  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
-}
-
-
-
-
-.btn-danger {
-  background-color: rgba(168, 104, 104, 0.2);
-  color: var(--status-rejected);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 8px 14px;
-  cursor: pointer;
-  transition: background-color 180ms ease;
-}
-
-.btn-danger:hover {
-  background-color: rgba(168, 104, 104, 0.35);
-}
-
-
-/* =========================
-   CARD EXPANDED DETAILS
-   ========================= */
-
-.app-card-details {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(139, 131, 120, 0.25);
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-}
-
-.detail-label {
-  color: var(--text-secondary);
-}
-
-.detail-value {
-  color: var(--text-primary);
-}
-
-/*Notes styles*/
-.detail-notes {
-  font-size: 0.8rem;
-  padding-top: 12px;
-  margin-top: 10px;
-  border-top: 1px solid rgba(139, 131, 120, 0.15);
-}
-
-.detail-notes .detail-label {
-  color: var(--text-secondary);
-  font-weight: 500;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.detail-notes p {
-  margin: 0;
-  line-height: 1.5;
-  color: var(--text-primary);
-}
-
-
-
-
-/* =========================
- AUTH MODAL (REGISTER / LOGIN)
-   ========================= */
-
-.auth-overlay {
-  position: fixed;
-  inset: 0;
-
-  background: rgba(13, 14, 18, 0.55);
-  backdrop-filter: blur(8px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  z-index: 200;
-  animation: authFadeIn 280ms ease;
-}
-
-
-.auth-modal {
-  background: var(--bg-surface);
-  border-radius: var(--radius-md);
-
-  width: 100%;
-  max-width: 420px;
-  padding: 28px 30px;
-
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-
-  animation: authSlideUp 420ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/*Modal title */
-.auth-title {
-  margin: 0 0 22px;
-  font-size: 1.45rem;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-}
-
-/*The Form layout */
+/* Form fields used in modals */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -591,12 +283,10 @@ button:focus-visible {
   gap: 6px;
 }
 
-
 .auth-field label {
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
-
 
 .auth-field input {
   background: var(--bg-elevated);
@@ -613,15 +303,12 @@ button:focus-visible {
     box-shadow 200ms ease;
 }
 
-
 .auth-field input:focus {
   outline: none;
   background-color: var(--bg-navbar);
   box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
 }
 
-
-/* Add this new rule for textareas */
 .auth-field textarea {
   background: var(--bg-elevated);
   border: none;
@@ -645,101 +332,24 @@ button:focus-visible {
   box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
 }
 
+.auth-field select {
+  background: var(--bg-elevated);
+  border: none;
+  border-radius: var(--radius-sm);
 
-/*Action buttons container */
-.auth-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-
-  margin-top: 22px;
-}
-
-/*Entry animation */
-@keyframes authSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/*Overlay fade*/
-@keyframes authFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* =========================
-AUTH MODAL EXIT ANIMATION
-   ========================= */
-
-.auth-overlay {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.auth-overlay.open {
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 280ms ease;
-}
-
-.auth-overlay.closing {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 320ms ease;
-}
-
-.auth-modal {
-  transform: translateY(14px) scale(0.98);
-  transition:
-    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 320ms ease;
-}
-
-.auth-overlay.open .auth-modal {
-  transform: translateY(0) scale(1);
-}
-
-.auth-overlay.closing .auth-modal {
-  transform: translateY(10px) scale(0.97);
-}
-
-
-/* =========================
-        PROFILE MODAL
-  ============================ */
-
-.profile-view {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.profile-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.profile-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.profile-value {
+  padding: 11px 12px;
   font-size: 0.95rem;
+
   color: var(--text-primary);
+  cursor: pointer;
+
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease;
 }
 
-
-
+.auth-field select:focus {
+  outline: none;
+  background-color: var(--bg-navbar);
+  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
+}

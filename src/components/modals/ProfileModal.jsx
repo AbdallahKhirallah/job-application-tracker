@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { authAPI } from "../../services/api";
+import "./Modal.css";
 
 export default function ProfileModal({ isOpen, user, onClose, onSave }) {
   const [shouldRender, setShouldRender] = useState(false);

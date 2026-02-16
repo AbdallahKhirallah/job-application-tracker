@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { authAPI } from "../../services/api";
+import "./Modal.css";
 
 export default function AuthModal({
   isOpen,

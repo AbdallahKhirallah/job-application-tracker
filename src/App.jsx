@@ -5,6 +5,7 @@ import AuthModal from "./components/modals/AuthModal";
 import ProfileModal from "./components/modals/ProfileModal";
 import { authAPI } from "./services/api";
 import "./index.css";
+import "./styles/buttons.css";
 
 function App() {
   // Authentification states
