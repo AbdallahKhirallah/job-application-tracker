@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import { authAPI } from "../../services/api";
 
-export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess, onOpenAuth  }) {
+export default function AuthModal({
+  isOpen,
+  mode,
+  onClose,
+  onLoginSuccess,
+  onOpenAuth,
+}) {
   const [shouldRender, setShouldRender] = useState(isOpen);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,7 +23,7 @@ export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess, onOpe
     if (isOpen) {
       setShouldRender(true);
 
-      setFormData({ name: "", email: "", password: "" });
+      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
       setError("");
     } else {
       const timeout = setTimeout(() => {
@@ -40,6 +47,13 @@ export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess, onOpe
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    // Validating password confirmation for registration
+    if (mode === "register" && formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
 
     try {
       if (mode === "register") {
@@ -112,6 +126,23 @@ export default function AuthModal({ isOpen, mode, onClose, onLoginSuccess, onOpe
               disabled={loading}
             />
           </div>
+
+          {mode === "register" && (
+            <div className="auth-field">
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                minLength={6}
+                disabled={loading}
+              />
+            </div>
+          )}
+
           {error && (
             <div
               style={{
