@@ -480,14 +480,37 @@ button:focus-visible {
 
 .detail-notes {
   font-size: 0.8rem;
+}
+
+.detail-notes .detail-label {
   color: var(--text-secondary);
 }
 
 .detail-notes p {
   margin: 4px 0 0;
   line-height: 1.4;
+  color: var(--text-primary);
 }
 
+.detail-notes {
+  font-size: 0.8rem;
+  padding-top: 12px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(139, 131, 120, 0.15);
+}
+
+.detail-notes .detail-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.detail-notes p {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
 
 /* =========================
  AUTH MODAL (REGISTER / LOGIN)
