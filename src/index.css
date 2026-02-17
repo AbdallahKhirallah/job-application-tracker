@@ -391,3 +391,18 @@ button:focus-visible {
   background-color: rgba(168, 104, 104, 0.45);
   transform: none;
 }
+
+
+/* =========================
+      INTERVIEW DATE POPUP
+   ========================= */
+
+.interview-popup {
+  max-width: 340px;
+}
+
+.optional-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}

@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import "./ApplicationCard.css";
 
-
 export default function ApplicationCard({
   company,
   role,
@@ -10,26 +9,53 @@ export default function ApplicationCard({
   appliedAt,
   source,
   notes,
+  interviewDate,
   isExpanded,
   onToggle,
   onDelete,
   onEdit,
   cardRef,
 }) {
+  // Formatting interview date for display  "Feb 20 at 2:00 PM"
+  function formatInterviewDate(dateStr) {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    return (
+      date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }) +
+      " at " +
+      date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
+    );
+  }
+
+  // returns how many days until interview (negative = {isExpanded && (past)
+  function getDaysUntil(dateStr) {
+    if (!dateStr) return null;
+    const now = new Date();
+    const interview = new Date(dateStr);
+    const diff = interview - now;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
+  const daysUntil = getDaysUntil(interviewDate);
+  const interviewIsPast = daysUntil !== null && daysUntil < 0;
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    company: "",
-    role: "",
-    status: "",
-    location: "",
-    appliedAt: "",
-    source: "",
-    notes: "",
-  });
+  const [formData, setFormData] = useState({ company: "", role: "", status: "", location: "", appliedAt: "", source: "", notes: "",interviewDate: "",  });
+    const [isInterviewPopupOpen, setIsInterviewPopupOpen] = useState(false);  
+  const [interviewForm, setInterviewForm] = useState({ date: '', time: '',});
+  const [pendingSave, setPendingSave] = useState(null);  
+
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -58,6 +84,7 @@ export default function ApplicationCard({
         appliedAt,
         source,
         notes,
+        interviewDate: interviewDate || "",
       });
     }
   }, [isEditOpen, company, role, status, location, appliedAt, source, notes]);
@@ -86,11 +113,57 @@ export default function ApplicationCard({
     };
 
     delete dataToSave.appliedAt;
+    delete dataToSave.interviewDate; 
+
+        //if status is being changed to interview, show the date popup first
+    if (formData.status === 'interview') {
+      setPendingSave(dataToSave);       //to hold the data while popup is open
+      setIsEditOpen(false);
+      setIsInterviewPopupOpen(true);    //to show the popup
+      return;
+    }
 
     onEdit(dataToSave);
     setIsEditOpen(false);
     setIsMenuOpen(false);
   }
+
+  // called after user confirms interview date in popup
+  function handleInterviewDateConfirm() {
+    // Combine date and time into one timestamp
+    //"2026-02-20" + "14:00" -> "2026-02-20T14:00"
+    const interview_date = interviewForm.date && interviewForm.time
+      ? `${interviewForm.date}T${interviewForm.time}`
+      : interviewForm.date
+        ? `${interviewForm.date}T00:00`
+        : null;
+
+    onEdit({
+      ...pendingSave,
+      interview_date,
+    });
+
+    // resetting everything
+    setIsInterviewPopupOpen(false);
+    setPendingSave(null);
+    setInterviewForm({ date: '', time: '' });
+    setIsMenuOpen(false);
+  }
+
+  // called when user clicks Add later
+  function handleInterviewDateSkip() {
+    onEdit({
+      ...pendingSave,
+      interview_date: null,   //saving without a date 
+    });
+
+    // resetting everything
+    setIsInterviewPopupOpen(false);
+    setPendingSave(null);
+    setInterviewForm({ date: '', time: '' });
+    setIsMenuOpen(false);
+  }
+
 
   return (
     <>
@@ -157,6 +230,47 @@ export default function ApplicationCard({
               <span className="detail-label">Source</span>
               <span className="detail-value">{source}</span>
             </div>
+
+            {/* Interview date row - only shows for interview status */}
+            {status === "interview" && (
+              <div className="detail-row">
+                <span className="detail-label">Interview</span>
+                <span className="detail-value">
+                  {interviewDate ? (
+                    formatInterviewDate(interviewDate)
+                  ) : (
+                    <span className="interview-no-date">📅 Add date</span>
+                  )}
+                </span>
+              </div>
+            )}
+
+            {/*The past interview prompt */}
+            {interviewIsPast && status === "interview" && (
+              <div className="past-interview-prompt">
+                <p className="past-interview-text">
+                  Interview was {Math.abs(daysUntil)}{" "}
+
+                  {Math.abs(daysUntil) === 1 ? "day" : "days"} ago · How did it
+                  go?
+                </p>
+                
+                <div className="past-interview-actions">
+                  <button
+                    className="past-interview-btn offer"
+                    onClick={() => onEdit({ status: "offer" })}
+                  >
+                    Got an Offer 🎉
+                  </button>
+                  <button
+                    className="past-interview-btn rejected"
+                    onClick={() => onEdit({ status: "rejected" })}
+                  >
+                    Rejected 😞
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="detail-notes">
               <span className="detail-label">Notes</span>
@@ -282,6 +396,62 @@ export default function ApplicationCard({
           </div>
         </div>
       )}
+
+{/* THE INTERVIEW DATE POPUP */}
+      {isInterviewPopupOpen && (
+        <div className="confirm-overlay">
+          <div className="confirm-dialog interview-popup">
+
+            <h3>When is your interview ?</h3>
+            <p>Add the date and time so we can remind you.</p>
+
+            <div className="auth-form">
+              <div className="auth-field">
+                <label>Date</label>
+                <input
+                  type="date"
+                  value={interviewForm.date}
+                  min={new Date().toISOString().split('T')[0]} //preventing past dates
+                  onChange={(e) =>
+                    setInterviewForm((prev) => ({ ...prev, date: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div className="auth-field">
+                <label>Time <span className="optional-label">(optional)</span></label>
+                <input
+                  type="time"
+                  value={interviewForm.time}
+                  onChange={(e) =>
+                    setInterviewForm((prev) => ({ ...prev, time: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+
+
+            <div className="confirm-actions">
+              <button
+                className="btn-secondary"
+                onClick={handleInterviewDateSkip}
+              >
+                Add later
+              </button>
+
+              <button
+                className="btn-primary"
+                onClick={handleInterviewDateConfirm}
+                disabled={!interviewForm.date}  //date is required to confirm (confirm button is disabled until the user picks a date).
+              >
+                Confirm
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </>
   );
 }
+      

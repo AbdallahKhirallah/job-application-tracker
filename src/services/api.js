@@ -309,8 +309,11 @@ export const applicationsAPI = {
   
   update: async (id, applicationData) => {
     try {
+
+
       // applicationData can include any fields you want to update without need to update all fields
       // COALESCE is used to keep old values for fields not included in backend
+      
       
       const data = await apiRequest(`/applications/${id}`, {
         method: 'PUT',

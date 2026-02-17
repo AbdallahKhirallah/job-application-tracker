@@ -35,6 +35,7 @@ router.get('/', authenticateToken, async (req, res) => {
         applied_at, 
         source, 
         notes, 
+        interview_date,
         created_at, 
         updated_at
       FROM applications 
@@ -83,6 +84,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
         applied_at, 
         source, 
         notes, 
+        interview_date,
         created_at, 
         updated_at
       FROM applications 
@@ -122,7 +124,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 router.post('/', authenticateToken, async (req, res) => {
   try {
     // Getting data from request body
-    const { company, role, status, location, applied_at, source, notes } = req.body;
+    const { company, role, status, location, applied_at, source, notes , interview_date } = req.body;
 
     // Input validation, to ensure required fields are provided
     if (!company || !role) {
@@ -139,22 +141,23 @@ router.post('/', authenticateToken, async (req, res) => {
       });
     }
 
-    // Inserting new application into database
+    //Inserting new application into database
     const newApplication = await pool.query(
       `INSERT INTO applications 
-        (user_id, company, role, status, location, applied_at, source, notes) 
+        (user_id, company, role, status, location, applied_at, source, notes, interview_date)  // ← added interview_date
       VALUES 
-        ($1, $2, $3, $4, $5, $6, $7, $8) 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)  // ← added $9
       RETURNING *`,
       [
-        req.userId,                    // $1  from the token
-        company,                       // $2  required
-        role,                          // $3  required
-        status || 'applied',           // $4  default is "applied" 
-        location || null,              // $5  optional
-        applied_at || null,            // $6  optional
-        source || null,                // $7  optional
-        notes || null                  // $8  optional
+        req.userId,
+        company,
+        role,
+        status || 'applied',
+        location || null,
+        applied_at || null,
+        source || null,
+        notes || null,
+        interview_date || null         // $9 optional, for interview status
       ]
     );
 
@@ -184,7 +187,7 @@ router.post('/', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { company, role, status, location, applied_at, source, notes } = req.body;
+    const { company, role, status, location, applied_at, source, notes, interview_date } = req.body;
 
     // Verifying the application exists and belongs to this user
     const existingApp = await pool.query(
@@ -222,10 +225,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
         applied_at = COALESCE($5, applied_at),
         source = COALESCE($6, source),
         notes = COALESCE($7, notes),
+        interview_date = $8,        
         updated_at = CURRENT_TIMESTAMP 
-      WHERE id = $8 AND user_id = $9
+      WHERE id = $9 AND user_id = $10  
       RETURNING *`,
-      [company, role, status, location, applied_at, source, notes, id, req.userId]
+      [company, role, status, location, applied_at, source, notes, interview_date || null, id, req.userId]  // ← added interview_date || null at $8, shifted id to $9, req.userId to $10
     );
 
     res.json({

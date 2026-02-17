@@ -215,6 +215,7 @@ if (filterDateFrom) {
 
   // Handling updating an application
   async function handleUpdateApplication(id, updatedData) {
+    console.log('handleUpdateApplication called:', id, updatedData); // ← add this
     try {
       const updatedApplication = await applicationsAPI.update(id, updatedData);
       setApplications((prev) =>
@@ -514,6 +515,7 @@ if (filterDateFrom) {
                 appliedAt={app.applied_at}
                 source={app.source}
                 notes={app.notes}
+                interviewDate={app.interview_date} 
                 isExpanded={expandedId === app.id}
                 onToggle={() =>
                   setExpandedId((prev) => (prev === app.id ? null : app.id))
