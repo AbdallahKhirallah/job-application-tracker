@@ -13,6 +13,10 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
     confirmPassword: "",
   });
   const [passwordError, setPasswordError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -63,9 +67,35 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
         newPassword: "",
         confirmPassword: "",
       });
-      // Optional: show success message
     } catch (error) {
       setPasswordError(error.message);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleteError("");
+
+    // verify user typed "DELETE"
+    if (deleteConfirmation !== "DELETE") {
+      setDeleteError("Please type DELETE to confirm");
+      return;
+    }
+
+    // verify password entry
+    if (!deletePassword) {
+      setDeleteError("Password is required");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await authAPI.deleteAccount(deletePassword);
+
+      // After account deletion ,reload page to show logged out state
+      window.location.reload();
+    } catch (error) {
+      setDeleteError(error.message);
+      setIsDeleting(false);
     }
   }
 
@@ -234,8 +264,62 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
               Close
             </button>
           )}
-        </div>
+
+</div> 
+        {/* DANGER ZONE - DELETE ACCOUNT */}
+        {!isChangingPassword && !isEditing && (
+          <div className="profile-danger-zone">
+            <h3 className="danger-zone-title">Danger Zone</h3>
+            <p className="danger-zone-description">
+              Once you delete your account, there is no going back. All your
+              applications will be permanently deleted.
+            </p>
+
+            <div className="auth-field">
+              <label>Type DELETE to confirm</label>
+              <input
+                type="text"
+                value={deleteConfirmation}
+                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                placeholder="DELETE"
+                disabled={isDeleting}
+              />
+            </div>
+
+            <div className="auth-field">
+              <label>Enter your password</label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="••••••••"
+                disabled={isDeleting}
+              />
+            </div>
+
+            {deleteError && (
+              <div
+                style={{
+                  color: "var(--status-rejected)",
+                  fontSize: "0.85rem",
+                  marginTop: "8px",
+                }}
+              >
+                {deleteError}
+              </div>
+            )}
+
+            <button
+              className="btn-danger btn-delete-account"
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting Account..." : "Delete My Account"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
+    
   );
 }

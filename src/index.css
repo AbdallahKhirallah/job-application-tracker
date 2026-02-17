@@ -353,3 +353,41 @@ button:focus-visible {
   background-color: var(--bg-navbar);
   box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
 }
+
+
+/* ===============================
+      DANGER ZONE (Delete Account)
+   ================================ */
+
+.profile-danger-zone {
+  margin-top: 16px;    
+  padding-top: 24px;
+  border-top: 1px solid rgba(168, 104, 104, 0.2);
+}
+
+.danger-zone-title {
+  color: var(--status-rejected);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  letter-spacing: 0.3px;
+}
+
+.danger-zone-description {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.btn-delete-account {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.btn-delete-account:hover {
+  background-color: rgba(168, 104, 104, 0.45);
+  transform: none;
+}

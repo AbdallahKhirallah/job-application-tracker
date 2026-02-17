@@ -191,6 +191,23 @@ updateProfile: async (name, email) => {
   return data;
 },
 
+
+
+// Deleting user account
+deleteAccount: async (password) => {
+  const data = await apiRequest('/auth/account', {
+    method: 'DELETE',
+    body: JSON.stringify({ password }),
+  });
+  
+  // to clear localStorage after deletion
+  removeToken();
+  removeUser();
+  
+  return data;
+},
+
+
 };
 
 

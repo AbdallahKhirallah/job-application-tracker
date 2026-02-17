@@ -298,6 +298,66 @@ router.put('/profile', authenticateToken, async (req, res) => {
 });
 
 
+// ========================================
+//      DELETE ACCOUNT ROUTE
+// ========================================
+// DELETE /api/auth/account
+// Deletes user account and all associated applications
+
+router.delete('/account', authenticateToken, async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    // Verifying password 
+    if (!password) {
+      return res.status(400).json({ 
+        message: 'Password is required to delete account' 
+      });
+    }
+
+    // getting user from database to verify password
+    const user = await pool.query(
+      'SELECT * FROM users WHERE id = $1',
+      [req.userId]
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(404).json({ 
+        message: 'User not found' 
+      });
+    }
+
+    // verify password
+    const validPassword = await bcrypt.compare(
+      password, 
+      user.rows[0].password
+    );
+
+
+    if (!validPassword) {
+      return res.status(401).json({ 
+        message: 'Incorrect password' 
+      });
+    }
+
+    // Delete user , CASCADE automatically deletes all applications
+    await pool.query(
+      'DELETE FROM users WHERE id = $1',
+      [req.userId]
+    );
+
+    res.json({
+      message: 'Account deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({ 
+      message: 'Error deleting account',
+      error: error.message 
+    });
+  }
+});
 
 
 // Export the router so server.js can use it
