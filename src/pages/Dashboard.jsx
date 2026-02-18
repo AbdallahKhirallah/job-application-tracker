@@ -122,7 +122,7 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
         const daysUntil = Math.ceil(
           (new Date(app.interview_date) - new Date()) / (1000 * 60 * 60 * 24),
         );
-        return daysUntil >= 0 && daysUntil <= 7; //within the next 7 days
+        return daysUntil >= 0 && daysUntil <= 14; //within the next 14 days (2 weeks)
       })
       .sort(
         (a, b) => new Date(a.interview_date) - new Date(b.interview_date), // the soonest first

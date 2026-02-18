@@ -144,9 +144,9 @@ router.post('/', authenticateToken, async (req, res) => {
     //Inserting new application into database
     const newApplication = await pool.query(
       `INSERT INTO applications 
-        (user_id, company, role, status, location, applied_at, source, notes, interview_date)  // ← added interview_date
+        (user_id, company, role, status, location, applied_at, source, notes, interview_date)  
       VALUES 
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9)  // ← added $9
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
       RETURNING *`,
       [
         req.userId,
@@ -229,7 +229,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         updated_at = CURRENT_TIMESTAMP 
       WHERE id = $9 AND user_id = $10  
       RETURNING *`,
-      [company, role, status, location, applied_at, source, notes, interview_date || null, id, req.userId]  // ← added interview_date || null at $8, shifted id to $9, req.userId to $10
+      [company, role, status, location, applied_at, source, notes, interview_date || null, id, req.userId]  
     );
 
     res.json({
