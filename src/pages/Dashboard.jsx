@@ -35,6 +35,9 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
 
   const filterHoverTimeout = useRef(null);
 
+  const interviewHoverTimeout = useRef(null);
+  const [isInterviewBeanOpen, setIsInterviewBeanOpen] = useState(false);
+
   // ----------------- Filter states ---------------------
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
@@ -79,12 +82,12 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
         if (!filterStatuses.includes(app.status)) return false;
       }
 
-if (filterDateFrom) {
+      if (filterDateFrom) {
         if (!app.applied_at) return false;
-        
+
         //  string comparison works for YYYY-MM-DD format
-        const appDate = app.applied_at.split('T')[0]; // extracting date part only
-        
+        const appDate = app.applied_at.split("T")[0]; // extracting date part only
+
         if (appDate < filterDateFrom) return false;
       }
 
@@ -108,6 +111,51 @@ if (filterDateFrom) {
     setFilterSearch("");
     setFilterStatuses([]);
     setFilterDateFrom("");
+  }
+
+  //upcoming interviews : interview status & date within 7 days or no date yet
+  const upcomingInterviews = useMemo(() => {
+    return applications
+      .filter((app) => {
+        if (app.status !== "interview") return false;
+        if (!app.interview_date) return false;
+        const daysUntil = Math.ceil(
+          (new Date(app.interview_date) - new Date()) / (1000 * 60 * 60 * 24),
+        );
+        return daysUntil >= 0 && daysUntil <= 7; //within the next 7 days
+      })
+      .sort(
+        (a, b) => new Date(a.interview_date) - new Date(b.interview_date), // the soonest first
+      );
+  }, [applications]);
+
+  //Returning urgency color class based on days until interview
+  function getUrgencyClass(dateStr) {
+    const daysUntil = Math.ceil(
+      (new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24),
+    );
+    if (daysUntil <= 1) return "urgency-red"; //today or tomorrow
+    if (daysUntil <= 4) return "urgency-yellow"; //2 - 4 days
+    return "urgency-green"; //5 - 7 days
+  }
+
+  // Formatting interview date ("Feb 20 · 2:00 PM" or  "Tomorrow" or "Today")
+  function formatUpcomingDate(dateStr) {
+    const date = new Date(dateStr);
+    const daysUntil = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
+
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    if (daysUntil === 0) return `Today · ${time}`;
+    if (daysUntil === 1) return `Tomorrow · ${time}`;
+    return (
+      date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+      ` · ${time}`
+    );
   }
 
   const activeChips = [
@@ -215,7 +263,6 @@ if (filterDateFrom) {
 
   // Handling updating an application
   async function handleUpdateApplication(id, updatedData) {
-    console.log('handleUpdateApplication called:', id, updatedData); // ← add this
     try {
       const updatedApplication = await applicationsAPI.update(id, updatedData);
       setApplications((prev) =>
@@ -307,13 +354,58 @@ if (filterDateFrom) {
     <main className="dashboard">
       <div className="dashboard-container">
         {/* Header with expanding filter bar */}
-        <div className="dashboard-header">
-          <h1 className="dashboard-title">Applications</h1>
-          <div className="dashboard-header-actions">
-            {/*The Hover-expanding filter bar */}
 
+        <h1 className="dashboard-title">Applications</h1>
+        <div className="dashboard-header">
+          <div className="dashboard-header-actions">
+            {/* Upcoming Interviews Bean (only shows when there are upcoming interviews)*/}
+
+            {upcomingInterviews.length > 0 && (
+              <div
+                className={`interview-bean ${isInterviewBeanOpen ? "open" : ""}`}
+                onMouseEnter={() => {
+                  interviewHoverTimeout.current = setTimeout(
+                    () => setIsInterviewBeanOpen(true),
+                    60,
+                  );
+                }}
+                onMouseLeave={() => {
+                  clearTimeout(interviewHoverTimeout.current);
+                  setIsInterviewBeanOpen(false);
+                }}
+              >
+                {/*Collapsed state : icon + count */}
+                <div className="interview-bean-trigger">
+                  <span className="interview-bean-label">Interviews</span>
+                  <span className="interview-bean-count">
+                    ({upcomingInterviews.length})
+                  </span>
+                </div>
+                {/*Expanded state : interview list */}
+                <div className="interview-bean-content">
+                  <div className="interview-bean-divider" />
+                  <div className="interview-bean-list">
+                    {upcomingInterviews.map((app) => (
+                      <div key={app.id} className="interview-bean-item">
+                        <span
+                          className={`interview-urgency-dot ${getUrgencyClass(app.interview_date)}`}
+                        />
+                        <span className="interview-bean-company">
+                          {app.company}
+                        </span>
+                        <span className="interview-bean-date">
+                          {formatUpcomingDate(app.interview_date)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/*The Hover-expanding filter bar */}
             <div
-              className="filter-bar"
+              className={`filter-bar ${isFilterOpen ? "open" : ""}`}
               onMouseEnter={() => {
                 filterHoverTimeout.current = setTimeout(
                   () => setIsFilterOpen(true),
@@ -515,7 +607,7 @@ if (filterDateFrom) {
                 appliedAt={app.applied_at}
                 source={app.source}
                 notes={app.notes}
-                interviewDate={app.interview_date} 
+                interviewDate={app.interview_date}
                 isExpanded={expandedId === app.id}
                 onToggle={() =>
                   setExpandedId((prev) => (prev === app.id ? null : app.id))

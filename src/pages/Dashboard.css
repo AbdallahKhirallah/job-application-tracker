@@ -501,7 +501,7 @@
 .dashboard-header {
   display: flex;
   align-items: center;
-  justify-content:  space-between;
+  justify-content: flex-end; 
   margin-bottom: 0;
    margin-top: 8px; 
   
@@ -511,7 +511,16 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-right: -30px;  /* to pushthe whole actions area right */
+  width: 100%;
+  justify-content: flex-end;
+  margin-right: -30px;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-right: 0;
 }
 .dashboard-header-actions .btn-primary {
   margin-left: auto;  /* to push button all the way right*/
@@ -531,31 +540,37 @@
   border: 1px solid rgba(139, 131, 120, 0.2);
   border-radius: var(--radius-pill);
   transition:
-    max-width 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    max-width 1000ms cubic-bezier(0.16, 1, 0.3, 1),
     border-color 300ms ease,
     background-color 280ms ease,
     box-shadow 300ms ease;
   will-change: max-width;
 }
 
-.filter-bar:hover {
+
+.filter-bar.open {
   max-width: 860px;
   border-color: rgba(179, 140, 164, 0.3);
-  background-color: var(--bg-surface);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+
+}
+
+.filter-bar.open .filter-trigger { color: var(--accent-rose); }
+.filter-bar.open .filter-bar-controls {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  
 }
 
 .filter-trigger {
   flex-shrink: 0;
-  width: auto;           /* Changed from 40px */
+  width: auto;           
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;              /* Added gap between icon and text */
-  padding: 0 12px;       /* Added horizontal padding */
+  gap: 6px;              
+  padding: 0 12px;      
   position: relative;
   background: transparent;
   border: none;
@@ -760,7 +775,7 @@
   content: none !important;
 }
 
-/* Make the calendar icon visible and clickable */
+/* To Make the calendar icon visible and clickable */
 .filter-date-input::-webkit-calendar-picker-indicator {
   position: absolute;
   top: 0;
@@ -778,7 +793,7 @@
   opacity: 0.85;
 }
 
-/* Hide all the text parts */
+
 .filter-date-input::-webkit-datetime-edit-fields-wrapper {
   display: none;
 }
@@ -877,3 +892,134 @@
 }
 
 .filter-no-results { margin-top: 60px; }
+
+
+
+/* =============================
+      UPCOMING INTERVIEWS BEAN
+   ============================= */
+
+.interview-bean {
+  position: relative;
+  height: 44px;
+  max-width: 145px;
+  overflow: hidden;
+
+  background: var(--bg-elevated);
+  border: 1px solid rgba(179, 140, 164, 0.25);
+  border-radius: var(--radius-pill);
+
+  display: flex;
+  align-items: center;
+
+  transition:
+    max-width 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 300ms ease,
+    background-color 280ms ease,
+    box-shadow 300ms ease;
+
+  will-change: max-width;
+  flex-shrink: 0;
+}
+
+.interview-bean.open {
+  max-width: 600px;
+  border-color: rgba(179, 140, 164, 0.4);
+  background-color: var(--bg-surface);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+/*Collapsed trigger area */
+.interview-bean-trigger {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+  gap: 5px;
+  padding: 0 16px;
+  color: var(--accent-rose);
+  pointer-events: none;
+  white-space: nowrap;
+  width: 100%;               
+}
+
+.interview-bean-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-rose);
+  letter-spacing: 0.2px;
+}
+
+.interview-bean-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-rose);
+}
+
+/* Expanded content */
+.interview-bean-content {
+  display: flex;
+  align-items: center;
+  gap: 0;
+
+  opacity: 0;
+  transform: translateX(-8px);
+  pointer-events: none;
+  white-space: nowrap;
+
+  transition:
+    opacity 240ms ease 120ms,
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1) 100ms;
+}
+
+.interview-bean.open .interview-bean-content {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.interview-bean-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(139, 131, 120, 0.22);
+  margin: 0 12px;
+  flex-shrink: 0;
+}
+
+/* Interview list */
+.interview-bean-list {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-right: 16px;
+}
+
+.interview-bean-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+}
+
+.interview-bean-company {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.interview-bean-date {
+  color: var(--text-secondary);
+}
+
+/* Urgency dots */
+.interview-urgency-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.urgency-red    { background-color: var(--status-rejected); }
+.urgency-yellow { background-color: var(--status-interview); }
+.urgency-green  { background-color: var(--status-offer); }
