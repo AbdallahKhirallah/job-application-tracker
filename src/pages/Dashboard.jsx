@@ -36,6 +36,7 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const filterHoverTimeout = useRef(null);
 
   const interviewHoverTimeout = useRef(null);
+  const interviewLeaveTimeout = useRef(null);
   const [isInterviewBeanOpen, setIsInterviewBeanOpen] = useState(false);
 
   // ----------------- Filter states ---------------------
@@ -364,6 +365,8 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
               <div
                 className={`interview-bean ${isInterviewBeanOpen ? "open" : ""}`}
                 onMouseEnter={() => {
+                  clearTimeout(interviewLeaveTimeout.current);
+                  clearTimeout(interviewHoverTimeout.current);
                   interviewHoverTimeout.current = setTimeout(
                     () => setIsInterviewBeanOpen(true),
                     60,
@@ -371,7 +374,10 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
                 }}
                 onMouseLeave={() => {
                   clearTimeout(interviewHoverTimeout.current);
-                  setIsInterviewBeanOpen(false);
+                  interviewLeaveTimeout.current = setTimeout(
+                    () => setIsInterviewBeanOpen(false),
+                    150,
+                  );
                 }}
               >
                 {/*Collapsed state : icon + count */}
@@ -385,8 +391,12 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
                 <div className="interview-bean-content">
                   <div className="interview-bean-divider" />
                   <div className="interview-bean-list">
-                    {upcomingInterviews.map((app) => (
-                      <div key={app.id} className="interview-bean-item">
+                    {upcomingInterviews.map((app, index) => (
+<div 
+  key={app.id} 
+  className="interview-bean-item"
+  style={{ '--item-index': index }}
+>
                         <span
                           className={`interview-urgency-dot ${getUrgencyClass(app.interview_date)}`}
                         />

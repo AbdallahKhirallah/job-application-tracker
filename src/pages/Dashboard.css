@@ -609,6 +609,9 @@
 }
 
 .filter-bar-controls {
+    transition:
+    opacity 150ms ease 0ms,
+    transform 150ms ease 0ms;
   display: flex;
   align-items: center;
   padding-right: 8px;
@@ -901,7 +904,7 @@
 
 .interview-bean {
   position: relative;
-  height: 44px;
+  max-height: 44px;
   max-width: 145px;
   overflow: hidden;
 
@@ -911,27 +914,50 @@
 
   display: flex;
   align-items: center;
+  flex-direction: row;
 
+  /* Closing transitions: vertical collapse first (no delay), then smooth horizontal collapse (slight overlap) */
   transition:
-    max-width 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    max-width 550ms cubic-bezier(0.16, 1, 0.3, 1) 300ms,
+    max-height 450ms cubic-bezier(0.16, 1, 0.3, 1),
     border-color 300ms ease,
     background-color 280ms ease,
-    box-shadow 300ms ease;
+    box-shadow 300ms ease,
+    border-radius 450ms cubic-bezier(0.16, 1, 0.3, 1) 300ms,
+    flex-direction 0ms 300ms,
+    padding 450ms cubic-bezier(0.16, 1, 0.3, 1) 300ms;
 
-  will-change: max-width;
+  will-change: max-width, max-height;
   flex-shrink: 0;
+  contain: layout style;
 }
 
 .interview-bean.open {
-  max-width: 600px;
+  max-width: 860px;
+  max-height: 500px;
+  border-radius: 12px;
   border-color: rgba(179, 140, 164, 0.4);
   background-color: var(--bg-surface);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px 0;
+
+  /* Opening transitions: horizontal first (0ms), then vertical (700ms delay - right after horizontal) */
+  transition:
+    max-width 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    max-height 450ms cubic-bezier(0.16, 1, 0.3, 1) 700ms,
+    border-color 300ms ease,
+    background-color 280ms ease,
+    box-shadow 300ms ease,
+    border-radius 450ms cubic-bezier(0.16, 1, 0.3, 1) 700ms,
+    flex-direction 0ms 700ms,
+    padding 450ms cubic-bezier(0.16, 1, 0.3, 1) 700ms;
 }
 
-/*Collapsed trigger area */
+/* Collapsed trigger area */
 .interview-bean-trigger {
   flex-shrink: 0;
   display: flex;
@@ -942,7 +968,13 @@
   color: var(--accent-rose);
   pointer-events: none;
   white-space: nowrap;
-  width: 100%;               
+  width: 100%;
+  transition: opacity 300ms ease;
+}
+
+.interview-bean.open .interview-bean-trigger {
+  opacity: 0.7;
+  transition: opacity 300ms ease 800ms;
 }
 
 .interview-bean-label {
@@ -963,37 +995,55 @@
   display: flex;
   align-items: center;
   gap: 0;
-
+  width: 100%;
   opacity: 0;
   transform: translateX(-8px);
   pointer-events: none;
   white-space: nowrap;
-
+  /* Closing: fade out immediately */
   transition:
-    opacity 240ms ease 120ms,
-    transform 280ms cubic-bezier(0.16, 1, 0.3, 1) 100ms;
+    opacity 300ms ease,
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .interview-bean.open .interview-bean-content {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
+  flex-direction: column;
+  align-items: stretch;
+  white-space: normal;
+  /* Opening: fade in after vertical expansion starts */
+  transition:
+    opacity 350ms ease 800ms,
+    transform 400ms cubic-bezier(0.16, 1, 0.3, 1) 800ms;
 }
 
 .interview-bean-divider {
-  width: 1px;
-  height: 18px;
+  width: calc(100% - 24px);
+  height: 1px;
   background: rgba(139, 131, 120, 0.22);
-  margin: 0 12px;
+  margin: 4px 12px 8px 12px;
   flex-shrink: 0;
+  opacity: 0;
+  /* Closing: fade out immediately */
+  transition: opacity 250ms ease;
+}
+
+.interview-bean.open .interview-bean-divider {
+  opacity: 1;
+  /* Opening: fade in after vertical expansion starts */
+  transition: opacity 300ms ease 900ms;
 }
 
 /* Interview list */
 .interview-bean-list {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  padding-right: 16px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0 16px;
+  width: 100%;
 }
 
 .interview-bean-item {
@@ -1001,6 +1051,21 @@
   align-items: center;
   gap: 7px;
   font-size: 0.82rem;
+  opacity: 0;
+  transform: translateY(-4px);
+  /* Closing: fade out immediately */
+  transition:
+    opacity 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.interview-bean.open .interview-bean-item {
+  opacity: 1;
+  transform: translateY(0);
+  /* Opening: fade in after vertical expansion */
+  transition:
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1) calc(1000ms + var(--item-index, 0) * 60ms),
+    transform 400ms cubic-bezier(0.16, 1, 0.3, 1) calc(1000ms + var(--item-index, 0) * 60ms);
 }
 
 .interview-bean-company {
@@ -1018,8 +1083,20 @@
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
+  transition: box-shadow 200ms ease;
 }
 
-.urgency-red    { background-color: var(--status-rejected); }
-.urgency-yellow { background-color: var(--status-interview); }
-.urgency-green  { background-color: var(--status-offer); }
+.urgency-red {
+  background-color: var(--status-rejected);
+  box-shadow: 0 0 6px rgba(168, 104, 104, 0.6);
+}
+
+.urgency-yellow {
+  background-color: var(--status-interview);
+  box-shadow: 0 0 6px rgba(196, 162, 90, 0.6);
+}
+
+.urgency-green {
+  background-color: var(--status-offer);
+  box-shadow: 0 0 6px rgba(111, 175, 138, 0.6);
+}
