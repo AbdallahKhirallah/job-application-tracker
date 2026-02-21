@@ -39,6 +39,10 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const interviewLeaveTimeout = useRef(null);
   const [isInterviewBeanOpen, setIsInterviewBeanOpen] = useState(false);
 
+  const [isInterviewPopupOpen, setIsInterviewPopupOpen] = useState(false);
+const [interviewForm, setInterviewForm] = useState({ date: '', time: '' });
+const [pendingCreateData, setPendingCreateData] = useState(null);
+
   // ----------------- Filter states ---------------------
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
@@ -209,47 +213,72 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
     if (createError) setCreateError("");
   }
 
-  async function handleCreateSubmit(e) {
-    e.preventDefault();
-    setCreateError("");
-    setCreateLoading(true);
+async function handleCreateSubmit(e) {
+  e.preventDefault();
+  setCreateError("");
 
-    if (!createFormData.company || !createFormData.role) {
-      setCreateError("Company and role are required");
-      setCreateLoading(false);
-      return;
-    }
-    try {
-      // Adding today's date to the form data (local timezone)
-      const today = new Date();
-      const localDate = new Date(
-        today.getTime() - today.getTimezoneOffset() * 60000,
-      );
-
-      const dataToSubmit = {
-        ...createFormData,
-        applied_at: localDate.toISOString().split("T")[0], // format : YYYY-MM-DD
-      };
-
-      const newApplication = await applicationsAPI.create(dataToSubmit);
-      setApplications((prev) => [newApplication, ...prev]);
-
-      setCreateFormData({
-        company: "",
-        role: "",
-        status: "applied",
-        location: "",
-        source: "",
-        notes: "",
-      });
-      setIsCreateOpen(false);
-    } catch (err) {
-      console.error("Error creating application:", err);
-      setCreateError(err.message || "Failed to create application");
-    } finally {
-      setCreateLoading(false);
-    }
+  if (!createFormData.company || !createFormData.role) {
+    setCreateError("Company and role are required");
+    return;
   }
+
+  const today = new Date();
+  const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+  const dataToSubmit = {
+    ...createFormData,
+    applied_at: localDate.toISOString().split("T")[0],
+  };
+
+  
+  if (createFormData.status === "interview") {
+    setPendingCreateData(dataToSubmit);
+    setIsCreateOpen(false);
+    setIsInterviewPopupOpen(true);
+    return;
+  }
+
+  await doCreateApplication(dataToSubmit);
+}
+
+
+async function doCreateApplication(data) {
+  setCreateLoading(true);
+  try {
+    const newApplication = await applicationsAPI.create(data);
+    setApplications((prev) => [newApplication, ...prev]);
+    setCreateFormData({
+      company: "", role: "", status: "applied",
+      location: "", source: "", notes: "",
+    });
+  } catch (err) {
+    setCreateError(err.message || "Failed to create application");
+  } finally {
+    setCreateLoading(false);
+  }
+}
+
+
+
+function handleCreateInterviewConfirm() {
+  const interview_date = interviewForm.date && interviewForm.time
+    ? `${interviewForm.date}T${interviewForm.time}`
+    : interviewForm.date
+      ? `${interviewForm.date}T00:00`
+      : null;
+
+  doCreateApplication({ ...pendingCreateData, interview_date });
+  setIsInterviewPopupOpen(false);
+  setPendingCreateData(null);
+  setInterviewForm({ date: '', time: '' });
+}
+
+function handleCreateInterviewSkip() {
+  doCreateApplication({ ...pendingCreateData, interview_date: null });
+  setIsInterviewPopupOpen(false);
+  setPendingCreateData(null);
+  setInterviewForm({ date: '', time: '' });
+}
+
 
   // Handling deleting an application
   async function handleDeleteApplication(id) {
@@ -743,6 +772,55 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
           </div>
         </div>
       )}
+
+
+      {isInterviewPopupOpen && (
+  <div className="confirm-overlay">
+    <div className="confirm-dialog interview-popup">
+      <h3>When is your interview?</h3>
+      <p>Add the date and time so we can remind you.</p>
+
+      <div className="auth-form">
+        <div className="auth-field">
+          <label>Date</label>
+          <input
+            type="date"
+            value={interviewForm.date}
+            min={new Date().toISOString().split('T')[0]}
+            onChange={(e) =>
+              setInterviewForm((prev) => ({ ...prev, date: e.target.value }))
+            }
+          />
+        </div>
+        <div className="auth-field">
+          <label>Time <span className="optional-label">(optional)</span></label>
+          <input
+            type="time"
+            value={interviewForm.time}
+            onChange={(e) =>
+              setInterviewForm((prev) => ({ ...prev, time: e.target.value }))
+            }
+          />
+        </div>
+      </div>
+
+      <div className="confirm-actions">
+        <button className="btn-secondary" onClick={handleCreateInterviewSkip}>
+          Add later
+        </button>
+        <button
+          className="btn-primary"
+          onClick={handleCreateInterviewConfirm}
+          disabled={!interviewForm.date}
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </main>
   );
 } // end of Dashboard function
