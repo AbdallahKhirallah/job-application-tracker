@@ -6,9 +6,26 @@
 const express = require('express');
 const pool = require('../config/database');
 const authenticateToken = require('../middleware/authenticateToken');
+const validateIdParam = require('../middleware/validateIdParam');
 
 // Creating a router to handle application routes
 const router = express.Router();
+
+// Sanitize string for DB: trim and enforce max length
+function trimMax(str, maxLen) {
+  if (str == null || typeof str !== 'string') return null;
+  const t = str.trim().slice(0, maxLen);
+  return t === '' ? null : t;
+}
+
+// Parse ISO date string (YYYY-MM-DD) or return null if invalid
+function parseDateOnly(value) {
+  if (value == null || value === '') return null;
+  const s = String(value).trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? null : s;
+}
 
 
 
@@ -18,7 +35,7 @@ const router = express.Router();
 // ==============================================
 // GETTING ALL APPLICATIONS FOR LOGGED-IN USER
 // ==============================================
-// GET /api/applications
+// GET /api/applications/
 // Returns all job applications that belong to the logged-in user
 
 router.get('/', authenticateToken, async (req, res) => {
@@ -54,9 +71,43 @@ router.get('/', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching applications:', error);
-    res.status(500).json({ 
-      message: 'Error fetching applications',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error fetching applications'
+    });
+  }
+});
+
+// ============================================
+//  GET APPLICATIONS STATISTICS (must be before /:id)
+// ============================================
+// GET /api/applications/stats/summary
+
+router.get('/stats/summary', authenticateToken, async (req, res) => {
+  try {
+    const stats = await pool.query(
+      `SELECT status, COUNT(*) as count
+       FROM applications WHERE user_id = $1 GROUP BY status`,
+      [req.userId]
+    );
+    const total = await pool.query(
+      'SELECT COUNT(*) as count FROM applications WHERE user_id = $1',
+      [req.userId]
+    );
+    const statusCounts = {};
+    stats.rows.forEach(row => {
+      statusCounts[row.status] = parseInt(row.count, 10);
+    });
+    res.json({
+      success: true,
+      stats: {
+        total: parseInt(total.rows[0].count, 10),
+        byStatus: statusCounts
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching statistics:', error);
+    res.status(500).json({
+      message: 'Error fetching statistics'
     });
   }
 });
@@ -67,7 +118,7 @@ router.get('/', authenticateToken, async (req, res) => {
 // GET /api/applications/:id
 // Returns a specific application if it belongs to the logged-in user
 
-router.get('/:id', authenticateToken, async (req, res) => {
+router.get('/:id', validateIdParam, authenticateToken, async (req, res) => {
   try {
     // Getting the application ID from the URL parameter
     const { id } = req.params;
@@ -94,8 +145,8 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
     // If no application found
     if (application.rows.length === 0) {
-      return res.status(404).json({ 
-        message: 'Application not found or you do not have permission to view it' 
+      return res.status(404).json({
+        message: 'Application not found or you do not have permission to view it'
       });
     }
 
@@ -108,9 +159,8 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching application:', error);
-    res.status(500).json({ 
-      message: 'Error fetching application',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error fetching application'
     });
   }
 });
@@ -123,42 +173,37 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    // Getting data from request body
-    const { company, role, status, location, applied_at, source, notes , interview_date } = req.body;
+    const raw = req.body;
+    const company = trimMax(raw.company, 200);
+    const role = trimMax(raw.role, 200);
+    const status = raw.status != null ? String(raw.status).trim().toLowerCase() : 'applied';
+    const location = trimMax(raw.location, 200);
+    const source = trimMax(raw.source, 200);
+    const notes = trimMax(raw.notes, 10000); // TEXT field
+    const applied_at = parseDateOnly(raw.applied_at);
+    const interview_date = raw.interview_date != null && raw.interview_date !== ''
+      ? parseDateOnly(String(raw.interview_date).slice(0, 10))
+      : null;
 
-    // Input validation, to ensure required fields are provided
     if (!company || !role) {
-      return res.status(400).json({ 
-        message: 'Company and role are required fields' 
+      return res.status(400).json({
+        message: 'Company and role are required fields'
       });
     }
 
-    // Validating status ,only allowing specific status values
     const validStatuses = ['applied', 'interview', 'offer', 'rejected'];
-    if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({ 
-        message: 'Invalid status. Must be one of: applied, interview, offer, rejected' 
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        message: 'Invalid status. Must be one of: applied, interview, offer, rejected'
       });
     }
 
-    //Inserting new application into database
     const newApplication = await pool.query(
       `INSERT INTO applications 
         (user_id, company, role, status, location, applied_at, source, notes, interview_date)  
-      VALUES 
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
       RETURNING *`,
-      [
-        req.userId,
-        company,
-        role,
-        status || 'applied',
-        location || null,
-        applied_at || null,
-        source || null,
-        notes || null,
-        interview_date || null         // $9 optional, for interview status
-      ]
+      [req.userId, company, role, status, location, applied_at, source, notes, interview_date]
     );
 
     // Return the newly created application
@@ -171,9 +216,8 @@ router.post('/', authenticateToken, async (req, res) => {
     
   } catch (error) {
     console.error('Error creating application:', error);
-    res.status(500).json({ 
-      message: 'Error creating application',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error creating application'
     });
   }
 });
@@ -184,37 +228,41 @@ router.post('/', authenticateToken, async (req, res) => {
 // PUT /api/applications/:id
 // Updates an existing application ( if it belongs to the logged in user)
 
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', validateIdParam, authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { company, role, status, location, applied_at, source, notes, interview_date } = req.body;
+    const raw = req.body;
 
-    // Verifying the application exists and belongs to this user
     const existingApp = await pool.query(
       'SELECT * FROM applications WHERE id = $1 AND user_id = $2',
       [id, req.userId]
     );
-
-
     if (existingApp.rows.length === 0) {
-      return res.status(404).json({ 
-        message: 'Application not found or you do not have permission to update it' 
+      return res.status(404).json({
+        message: 'Application not found or you do not have permission to update it'
       });
     }
 
-
-
-    // Validating status if provided
     const validStatuses = ['applied', 'interview', 'offer', 'rejected'];
-    if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({ 
-        message: 'Invalid status. Must be one of: applied, interview, offer, rejected' 
+    const status = raw.status != null ? String(raw.status).trim().toLowerCase() : null;
+    if (status !== null && !validStatuses.includes(status)) {
+      return res.status(400).json({
+        message: 'Invalid status. Must be one of: applied, interview, offer, rejected'
       });
     }
 
-    // Update the application
-    // COALESCE keeps old values if new ones are not provided, it returns the first non-null value
-    // updated_at = CURRENT_TIMESTAMP automatically updates the timestamp
+    const company = raw.company !== undefined ? trimMax(raw.company, 200) : null;
+    const role = raw.role !== undefined ? trimMax(raw.role, 200) : null;
+    const location = raw.location !== undefined ? trimMax(raw.location, 200) : null;
+    const source = raw.source !== undefined ? trimMax(raw.source, 200) : null;
+    const notes = raw.notes !== undefined ? trimMax(raw.notes, 10000) : null;
+    const applied_at = raw.applied_at !== undefined ? parseDateOnly(raw.applied_at) : null;
+    const interview_date = raw.interview_date !== undefined
+      ? (raw.interview_date != null && raw.interview_date !== ''
+          ? parseDateOnly(String(raw.interview_date).slice(0, 10))
+          : null)
+      : undefined;
+
     const updatedApplication = await pool.query(
       `UPDATE applications 
       SET 
@@ -225,11 +273,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
         applied_at = COALESCE($5, applied_at),
         source = COALESCE($6, source),
         notes = COALESCE($7, notes),
-        interview_date = $8,        
+        interview_date = $8,
         updated_at = CURRENT_TIMESTAMP 
       WHERE id = $9 AND user_id = $10  
       RETURNING *`,
-      [company, role, status, location, applied_at, source, notes, interview_date || null, id, req.userId]  
+      [company, role, status, location, applied_at, source, notes, interview_date === undefined ? existingApp.rows[0].interview_date : interview_date, id, req.userId]
     );
 
     res.json({
@@ -240,64 +288,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Error updating application:', error);
-    res.status(500).json({ 
-      message: 'Error updating application',
-      error: error.message 
-
-    });
-  }
-});
-
-
-
-// ============================================
-//  GET APPLICATIONS STATISTICS
-// ============================================
-// GET /api/applications/stats
-// Returns statistics about the user's applications(by status)
-
-router.get('/stats/summary', authenticateToken, async (req, res) => {
-  try {
-
-    // Query to count applications grouped by status
-    const stats = await pool.query(
-      `SELECT 
-        status,
-        COUNT(*) as count
-      FROM applications
-      WHERE user_id = $1
-      GROUP BY status`,
-      [req.userId]
-
-    );
-
-    // total count
-    const total = await pool.query(
-      'SELECT COUNT(*) as count FROM applications WHERE user_id = $1',
-      [req.userId]
-    );
-
-
-    // Converting the array of {status, count} into an object like {applied: 5, interview: 2}
-    const statusCounts = {};
-    stats.rows.forEach(row => {
-      statusCounts[row.status] = parseInt(row.count);
-    });
-
-    
-    res.json({
-      success: true,
-      stats: {
-        total: parseInt(total.rows[0].count),
-        byStatus: statusCounts
-      }
-    });
-
-  } catch (error) {
-    console.error('Error fetching statistics:', error);
-    res.status(500).json({ 
-      message: 'Error fetching statistics',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error updating application'
     });
   }
 });
@@ -308,7 +300,7 @@ router.get('/stats/summary', authenticateToken, async (req, res) => {
 // DELETE /api/applications/:id
 // Deletes an application (if it belongs to the logged in user)
 
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', validateIdParam, authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -321,8 +313,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
     // If no rows were deleted, the application didn't exist or doesn't belong to user
     if (deletedApplication.rows.length === 0) {
-      return res.status(404).json({ 
-        message: 'Application not found or you do not have permission to delete it' 
+      return res.status(404).json({
+        message: 'Application not found or you do not have permission to delete it'
       });
     }
 
@@ -335,9 +327,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Error deleting application:', error);
-    res.status(500).json({ 
-      message: 'Error deleting application',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error deleting application'
     });
   }
 });

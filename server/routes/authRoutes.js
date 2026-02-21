@@ -21,31 +21,43 @@ const router = express.Router();
 // ===========================================
 // POST /api/auth/register
 
+// Sanitize string: trim and enforce max length
+function trimMax(str, maxLen) {
+  if (typeof str !== 'string') return '';
+  return str.trim().slice(0, maxLen);
+}
+
 router.post('/register', async (req, res) => {
   try {
-    // Getting data from request body
-    // frontend will send it as :{ name, email, password }
-    const { name, email, password } = req.body;
+    // Getting data from request body (sanitize strings)
+    let { name, email, password } = req.body;
+    name = trimMax(name, 100);
+    email = trimMax(email, 255).toLowerCase();
 
     // Making sure all required fields are provided
     if (!name || !email || !password) {
-      return res.status(400).json({ 
-        message: 'Please provide Name, E-mail, and Password' 
+      return res.status(400).json({
+        message: 'Please provide Name, E-mail, and Password'
       });
     }
 
     // Checking for e-mail validity using regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
-        message: 'Please provide a valid E-mail address' 
+      return res.status(400).json({
+        message: 'Please provide a valid E-mail address'
       });
     }
 
     // Checking for password strength At least 6 characters
     if (password.length < 6) {
-      return res.status(400).json({ 
-        message: 'Password must be at least 6 characters long' 
+      return res.status(400).json({
+        message: 'Password must be at least 6 characters long'
+      });
+    }
+    if (password.length > 128) {
+      return res.status(400).json({
+        message: 'Password is too long'
       });
     }
 
@@ -93,10 +105,9 @@ router.post('/register', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Registration error:' , error);
-    res.status(500).json({ 
-      message: 'Error registering user',
-      error: error.message 
+    console.error('Registration error:', error);
+    res.status(500).json({
+      message: 'Error registering user'
     });
   }
 });
@@ -109,14 +120,17 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    //Getting email and password from request
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = trimMax(email, 255).toLowerCase();
 
     //Input validation
     if (!email || !password) {
-      return res.status(400).json({ 
-        message: 'Please provide the E-mail and password' 
+      return res.status(400).json({
+        message: 'Please provide the E-mail and password'
       });
+    }
+    if (password.length > 128) {
+      return res.status(400).json({ message: 'Invalid request' });
     }
 
     //Finding user in database
@@ -166,9 +180,8 @@ router.post('/login', async (req, res) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ 
-      message: 'Error logging in',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error logging in'
     });
   }
 });
@@ -187,15 +200,20 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
     // Validation
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ 
-        message: 'Please provide current and new password' 
+      return res.status(400).json({
+        message: 'Please provide current and new password'
       });
     }
-
+    if (typeof currentPassword !== 'string' || currentPassword.length > 128) {
+      return res.status(400).json({ message: 'Invalid request' });
+    }
     if (newPassword.length < 6) {
-      return res.status(400).json({ 
-        message: 'New password must be at least 6 characters long' 
+      return res.status(400).json({
+        message: 'New password must be at least 6 characters long'
       });
+    }
+    if (newPassword.length > 128) {
+      return res.status(400).json({ message: 'New password is too long' });
     }
 
     // Get user from database
@@ -232,9 +250,8 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Change password error:', error);
-    res.status(500).json({ 
-      message: 'Error changing password',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error changing password'
     });
   }
 });
@@ -249,19 +266,21 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { name, email } = req.body;
+    let { name, email } = req.body;
+    name = trimMax(name, 100);
+    email = trimMax(email, 255).toLowerCase();
 
     if (!name || !email) {
-      return res.status(400).json({ 
-        message: 'Name and email are required' 
+      return res.status(400).json({
+        message: 'Name and email are required'
       });
     }
 
     // Checking email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
-        message: 'Please provide a valid email address' 
+      return res.status(400).json({
+        message: 'Please provide a valid email address'
       });
     }
 
@@ -290,9 +309,8 @@ router.put('/profile', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ 
-      message: 'Error updating profile',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error updating profile'
     });
   }
 });
@@ -308,10 +326,10 @@ router.delete('/account', authenticateToken, async (req, res) => {
   try {
     const { password } = req.body;
 
-    // Verifying password 
-    if (!password) {
-      return res.status(400).json({ 
-        message: 'Password is required to delete account' 
+    // Verifying password
+    if (!password || typeof password !== 'string' || password.length > 128) {
+      return res.status(400).json({
+        message: 'Password is required to delete account'
       });
     }
 
@@ -352,9 +370,8 @@ router.delete('/account', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Delete account error:', error);
-    res.status(500).json({ 
-      message: 'Error deleting account',
-      error: error.message 
+    res.status(500).json({
+      message: 'Error deleting account'
     });
   }
 });

@@ -5,6 +5,8 @@
 // Importing required packages
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const pool = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
@@ -13,6 +15,11 @@ const applicationsRoutes = require('./routes/applications');
 // load environment variables from .env file
 dotenv.config();
 
+// Fail fast if JWT_SECRET is missing (security-critical)
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  console.error('FATAL: JWT_SECRET must be set in .env and be at least 32 characters.');
+  process.exit(1);
+}
 
 // creating Express application
 const app = express();
@@ -25,6 +32,9 @@ const PORT = process.env.PORT || 5000;
 //  MIDDLEWARES
 // =========================
 
+// Security headers
+app.use(helmet());
+
 // CORS (allows the react app [running on port 5173] to talk to this server[port 5000])
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -32,7 +42,27 @@ app.use(cors({
 }));
 
 // JSON Parser (Converts incoming JSON data into javaScript objects accessible as req.body.email)
-app.use(express.json());
+app.use(express.json({ limit: '32kb' }));
+
+// Rate limit: general API (all endpoints)
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 300,                  // 300 requests per window per IP
+  message: { message: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', apiLimiter);
+
+// Rate limit: auth endpoints (stricter to prevent brute force)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,                   // 30 login/register attempts per 15 min per IP
+  message: { message: 'Too many auth attempts, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/auth', authLimiter);
 
 
 
@@ -103,12 +133,12 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Global error handler
+// Global error handler (do not leak error details in production)
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    ...(process.env.NODE_ENV === 'development' && { error: err.message })
   });
 });
 
