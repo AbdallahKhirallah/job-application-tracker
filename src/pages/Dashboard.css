@@ -917,15 +917,15 @@
   flex-direction: row;
 
   /* Closing transitions: vertical collapse first (no delay), then smooth horizontal collapse (slight overlap) */
-  transition:
-    max-width 550ms cubic-bezier(0.16, 1, 0.3, 1) 300ms,
-    max-height 450ms cubic-bezier(0.16, 1, 0.3, 1),
+transition:
+    max-width 500ms cubic-bezier(0.16, 1, 0.3, 1) 200ms,
+    max-height 350ms cubic-bezier(0.16, 1, 0.3, 1),
     border-color 300ms ease,
     background-color 280ms ease,
     box-shadow 300ms ease,
-    border-radius 450ms cubic-bezier(0.16, 1, 0.3, 1) 300ms,
-    flex-direction 0ms 300ms,
-    padding 450ms cubic-bezier(0.16, 1, 0.3, 1) 300ms;
+    border-radius 400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms,
+    flex-direction 0ms 180ms,
+    padding 400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms;
 
   will-change: max-width, max-height;
   flex-shrink: 0;
@@ -945,16 +945,16 @@
   align-items: stretch;
   padding: 8px 0;
 
-  /* Opening transitions: horizontal first (0ms), then vertical (700ms delay - right after horizontal) */
+/* Opening transitions: both start together, width finishes first naturally */
   transition:
-    max-width 700ms cubic-bezier(0.16, 1, 0.3, 1),
-    max-height 450ms cubic-bezier(0.16, 1, 0.3, 1) 700ms,
+    max-width 500ms cubic-bezier(0.16, 1, 0.3, 1),
+    max-height 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms,
     border-color 300ms ease,
     background-color 280ms ease,
     box-shadow 300ms ease,
-    border-radius 450ms cubic-bezier(0.16, 1, 0.3, 1) 700ms,
-    flex-direction 0ms 700ms,
-    padding 450ms cubic-bezier(0.16, 1, 0.3, 1) 700ms;
+    border-radius 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms,
+    flex-direction 0ms 80ms,
+    padding 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms;
 }
 
 /* Collapsed trigger area */
