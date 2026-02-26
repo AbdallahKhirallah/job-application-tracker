@@ -302,6 +302,12 @@
   color: var(--text-primary);
 }
 
+.notes-empty {
+  color: var(--text-secondary);
+  opacity: 0.5;
+  font-style: italic;
+}
+
 /*Copy cursor styles*/
 .app-card-company,
 .app-card-role {

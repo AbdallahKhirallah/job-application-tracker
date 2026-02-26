@@ -303,7 +303,7 @@ export default function ApplicationCard({
 
             <div className="detail-notes">
               <span className="detail-label">Notes</span>
-              <p>{notes}</p>
+              <p className={!notes ? "notes-empty" : ""}>{notes || "No notes added"}</p>
             </div>
           </div>
         )}
