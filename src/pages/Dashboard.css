@@ -330,6 +330,12 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+.ghost-stat-num--rate {
+  background: linear-gradient(135deg, #B38CA4, #d4b0c8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .ghost-stat-label {
   font-size: 0.7rem;
   font-weight: 500;

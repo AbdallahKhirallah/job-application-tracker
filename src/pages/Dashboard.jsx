@@ -101,13 +101,19 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   }, [applications, filterSearch, filterStatuses, filterDateFrom]);
 
 
-  const statusCounts = useMemo(() => {
-  return {
-    applied:   applications.filter(a => a.status === "applied").length,
-    interview: applications.filter(a => a.status === "interview").length,
-    offer:     applications.filter(a => a.status === "offer").length,
-    rejected:  applications.filter(a => a.status === "rejected").length,
-  };
+
+// Status counts + response rate for the stats strip
+const statusCounts = useMemo(() => {
+  const applied   = applications.filter(a => a.status === "applied").length;
+  const interview = applications.filter(a => a.status === "interview").length;
+  const offer     = applications.filter(a => a.status === "offer").length;
+  const rejected  = applications.filter(a => a.status === "rejected").length;
+  const total     = applied + interview + offer + rejected;
+
+  //Interviews + offers out of total =response rate
+  const responseRate = total > 0 ? Math.round((interview + offer) / total * 100) : 0;
+
+  return { applied, interview, offer, rejected, responseRate };
 }, [applications]);
 
   const activeFilterCount =
@@ -442,6 +448,11 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   <div className="ghost-stat">
     <span className="ghost-stat-num ghost-stat-num--rejected">{statusCounts.rejected}</span>
     <span className="ghost-stat-label">Rejected</span>
+  </div>
+  <div className="ghost-stat-divider" />
+  <div className="ghost-stat">
+    <span className="ghost-stat-num ghost-stat-num--rate">{statusCounts.responseRate}%</span>
+    <span className="ghost-stat-label">Response</span>
   </div>
 </div>
         <div className="dashboard-header">
