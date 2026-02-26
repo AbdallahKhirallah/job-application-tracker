@@ -100,6 +100,16 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
     });
   }, [applications, filterSearch, filterStatuses, filterDateFrom]);
 
+
+  const statusCounts = useMemo(() => {
+  return {
+    applied:   applications.filter(a => a.status === "applied").length,
+    interview: applications.filter(a => a.status === "interview").length,
+    offer:     applications.filter(a => a.status === "offer").length,
+    rejected:  applications.filter(a => a.status === "rejected").length,
+  };
+}, [applications]);
+
   const activeFilterCount =
     (filterSearch.trim() ? 1 : 0) +
     filterStatuses.length +
@@ -413,6 +423,27 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
         {/* Header with expanding filter bar */}
 
         <h1 className="dashboard-title">Applications</h1>
+        <div className="dashboard-stats-strip">
+  <div className="ghost-stat">
+    <span className="ghost-stat-num">{statusCounts.applied}</span>
+    <span className="ghost-stat-label">Applied</span>
+  </div>
+  <div className="ghost-stat-divider" />
+  <div className="ghost-stat">
+    <span className="ghost-stat-num ghost-stat-num--interview">{statusCounts.interview}</span>
+    <span className="ghost-stat-label">Interviews</span>
+  </div>
+  <div className="ghost-stat-divider" />
+  <div className="ghost-stat">
+    <span className="ghost-stat-num ghost-stat-num--offer">{statusCounts.offer}</span>
+    <span className="ghost-stat-label">Offers</span>
+  </div>
+  <div className="ghost-stat-divider" />
+  <div className="ghost-stat">
+    <span className="ghost-stat-num ghost-stat-num--rejected">{statusCounts.rejected}</span>
+    <span className="ghost-stat-label">Rejected</span>
+  </div>
+</div>
         <div className="dashboard-header">
           <div className="dashboard-header-actions">
             {/* Upcoming Interviews Bean (only shows when there are upcoming interviews)*/}

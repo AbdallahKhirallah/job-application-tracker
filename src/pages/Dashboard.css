@@ -279,7 +279,7 @@
 }
 
 
-/* Stats Strip */
+/* Logged-out Stats Strip */
 .ghost-stats-strip {
   display: flex;
   align-items: center;
@@ -307,7 +307,7 @@
   font-size: 1.35rem;
   font-weight: 700;
   line-height: 1;
-  background: linear-gradient(135deg, #E6E6EB, #B38CA4);
+  background: linear-gradient(135deg, #7A8CA3, #9aafc9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -351,6 +351,46 @@
 .ghost-stats-strip:hover .ghost-stat-num {
   transform: scale(1.08);
 }
+
+
+
+/*Logged-in stats strip*/
+.dashboard-stats-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  background: rgba(38, 40, 51, 0.45);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(179, 140, 164, 0.1);
+  border-radius: 999px;
+  padding: 7px 20px;
+  align-self: center;
+  width: fit-content;
+  transition: border-color 300ms ease;
+  margin-inline: auto;
+}
+
+.dashboard-stats-strip:hover {
+  border-color: rgba(179, 140, 164, 0.28);
+}
+
+.dashboard-stats-strip .ghost-stat {
+  padding: 0 14px;
+}
+
+.dashboard-stats-strip .ghost-stat-num {
+  font-size: 1.1rem;
+}
+
+.dashboard-stats-strip .ghost-stat-label {
+  font-size: 0.65rem;
+}
+
+.dashboard-stats-strip:hover .ghost-stat-num {
+  transform: scale(1.08);
+}
+
 
 /* Ghost card gradient overlay */
 .ghost-card-overlay {
