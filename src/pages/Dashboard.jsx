@@ -447,27 +447,27 @@ const statusCounts = useMemo(() => {
         <h1 className="dashboard-title">Applications</h1>
         <div className="dashboard-stats-strip">
   <div className="ghost-stat">
-    <span className="ghost-stat-num">{statusCounts.applied}</span>
+    <span className="ghost-stat-num">{statusCounts.applied || '—'}</span>
     <span className="ghost-stat-label">Applied</span>
   </div>
   <div className="ghost-stat-divider" />
   <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--interview">{statusCounts.interview}</span>
+    <span className="ghost-stat-num ghost-stat-num--interview">{statusCounts.interview || '—'}</span>
     <span className="ghost-stat-label">Interviews</span>
   </div>
   <div className="ghost-stat-divider" />
   <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--offer">{statusCounts.offer}</span>
+    <span className="ghost-stat-num ghost-stat-num--offer">{statusCounts.offer || '—'}</span>
     <span className="ghost-stat-label">Offers</span>
   </div>
   <div className="ghost-stat-divider" />
   <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--rejected">{statusCounts.rejected}</span>
+    <span className="ghost-stat-num ghost-stat-num--rejected">{statusCounts.rejected || '—'}</span>
     <span className="ghost-stat-label">Rejected</span>
   </div>
   <div className="ghost-stat-divider" />
   <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--rate">{statusCounts.responseRate}%</span>
+    <span className="ghost-stat-num ghost-stat-num--rate">{statusCounts.responseRate ? `${statusCounts.responseRate}%` : '—'}</span>
     <span className="ghost-stat-label">Response</span>
   </div>
 </div>
