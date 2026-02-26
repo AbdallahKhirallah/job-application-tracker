@@ -162,6 +162,7 @@
   max-width: 650px;
   text-align: center;
   line-height: 1.6;
+  color: var(--text-secondary);
   
 }
 
@@ -336,6 +337,19 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   opacity: 0.7;
+}
+
+.ghost-stats-strip {
+  transition: border-color 300ms ease;
+}
+.ghost-stats-strip:hover {
+  border-color: rgba(179, 140, 164, 0.28);
+}
+.ghost-stat-num {
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ghost-stats-strip:hover .ghost-stat-num {
+  transform: scale(1.08);
 }
 
 /* Ghost card gradient overlay */
