@@ -71,6 +71,22 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
     }
   }
 
+//Keyboard shortcut : press "N" to open Add Application modal,
+// Disabled when user is typing in a field or modal is already open
+  useEffect(() => {
+  function handleKeyDown(e) {
+    if (e.key === 'n' || e.key === 'N') {
+      const tag = document.activeElement.tagName;
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+      if (isCreateOpen) return;
+      setIsCreateOpen(true);
+    }
+  }
+  document.addEventListener('keydown', handleKeyDown);
+  return () => document.removeEventListener('keydown', handleKeyDown);
+}, [isCreateOpen]);
+
+
   // ── Filtered applications (derived) ───────────
   const filteredApplications = useMemo(() => {
     return applications.filter((app) => {
@@ -631,7 +647,7 @@ const statusCounts = useMemo(() => {
               className="btn-primary"
               onClick={() => setIsCreateOpen(true)}
             >
-              + Add Application
+              + Add Application <span className="kbd-hint">N</span>
             </button>
           </div>
         </div>
