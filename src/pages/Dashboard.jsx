@@ -40,8 +40,8 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const [isInterviewBeanOpen, setIsInterviewBeanOpen] = useState(false);
 
   const [isInterviewPopupOpen, setIsInterviewPopupOpen] = useState(false);
-const [interviewForm, setInterviewForm] = useState({ date: '', time: '' });
-const [pendingCreateData, setPendingCreateData] = useState(null);
+  const [interviewForm, setInterviewForm] = useState({ date: "", time: "" });
+  const [pendingCreateData, setPendingCreateData] = useState(null);
 
   // ----------------- Filter states ---------------------
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -213,72 +213,74 @@ const [pendingCreateData, setPendingCreateData] = useState(null);
     if (createError) setCreateError("");
   }
 
-async function handleCreateSubmit(e) {
-  e.preventDefault();
-  setCreateError("");
+  async function handleCreateSubmit(e) {
+    e.preventDefault();
+    setCreateError("");
 
-  if (!createFormData.company || !createFormData.role) {
-    setCreateError("Company and role are required");
-    return;
+    if (!createFormData.company || !createFormData.role) {
+      setCreateError("Company and role are required");
+      return;
+    }
+
+    const today = new Date();
+    const localDate = new Date(
+      today.getTime() - today.getTimezoneOffset() * 60000,
+    );
+    const dataToSubmit = {
+      ...createFormData,
+      applied_at: localDate.toISOString().split("T")[0],
+    };
+
+    if (createFormData.status === "interview") {
+      setPendingCreateData(dataToSubmit);
+      setIsCreateOpen(false);
+      setIsInterviewPopupOpen(true);
+      return;
+    }
+
+    await doCreateApplication(dataToSubmit);
   }
 
-  const today = new Date();
-  const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
-  const dataToSubmit = {
-    ...createFormData,
-    applied_at: localDate.toISOString().split("T")[0],
-  };
-
-  
-  if (createFormData.status === "interview") {
-    setPendingCreateData(dataToSubmit);
-    setIsCreateOpen(false);
-    setIsInterviewPopupOpen(true);
-    return;
+  async function doCreateApplication(data) {
+    setCreateLoading(true);
+    try {
+      const newApplication = await applicationsAPI.create(data);
+      setApplications((prev) => [newApplication, ...prev]);
+      setCreateFormData({
+        company: "",
+        role: "",
+        status: "applied",
+        location: "",
+        source: "",
+        notes: "",
+      });
+    } catch (err) {
+      setCreateError(err.message || "Failed to create application");
+    } finally {
+      setCreateLoading(false);
+    }
   }
 
-  await doCreateApplication(dataToSubmit);
-}
+  function handleCreateInterviewConfirm() {
+    const interview_date =
+      interviewForm.date && interviewForm.time
+        ? `${interviewForm.date}T${interviewForm.time}`
+        : interviewForm.date
+          ? `${interviewForm.date}T00:00`
+          : null;
 
-
-async function doCreateApplication(data) {
-  setCreateLoading(true);
-  try {
-    const newApplication = await applicationsAPI.create(data);
-    setApplications((prev) => [newApplication, ...prev]);
-    setCreateFormData({
-      company: "", role: "", status: "applied",
-      location: "", source: "", notes: "",
-    });
-  } catch (err) {
-    setCreateError(err.message || "Failed to create application");
-  } finally {
-    setCreateLoading(false);
+    doCreateApplication({ ...pendingCreateData, interview_date });
+    setIsInterviewPopupOpen(false);
+    setPendingCreateData(null);
+    setInterviewForm({ date: "", time: "" });
   }
-}
 
-
-
-function handleCreateInterviewConfirm() {
-  const interview_date = interviewForm.date && interviewForm.time
-    ? `${interviewForm.date}T${interviewForm.time}`
-    : interviewForm.date
-      ? `${interviewForm.date}T00:00`
-      : null;
-
-  doCreateApplication({ ...pendingCreateData, interview_date });
-  setIsInterviewPopupOpen(false);
-  setPendingCreateData(null);
-  setInterviewForm({ date: '', time: '' });
-}
-
-function handleCreateInterviewSkip() {
-  doCreateApplication({ ...pendingCreateData, interview_date: null });
-  setIsInterviewPopupOpen(false);
-  setPendingCreateData(null);
-  setInterviewForm({ date: '', time: '' });
-}
-
+  function handleCreateInterviewSkip() {
+    doCreateApplication({ ...pendingCreateData, interview_date: null });
+    setIsInterviewPopupOpen(false);
+    setPendingCreateData(null);
+    setInterviewForm({ date: "", time: "" });
+  }
 
   // Handling deleting an application
   async function handleDeleteApplication(id) {
@@ -368,6 +370,31 @@ function handleCreateInterviewSkip() {
             </button>
           </div>
 
+          {/* Status count bar */}
+          <div className="ghost-stats-strip">
+            <div className="ghost-stat">
+              <span className="ghost-stat-num">12</span>
+              <span className="ghost-stat-label">Applied</span>
+            </div>
+            <div className="ghost-stat-divider" />
+            <div className="ghost-stat">
+              <span className="ghost-stat-num ghost-stat-num--interview">
+                4
+              </span>
+              <span className="ghost-stat-label">Interviews</span>
+            </div>
+            <div className="ghost-stat-divider" />
+            <div className="ghost-stat">
+              <span className="ghost-stat-num ghost-stat-num--offer">2</span>
+              <span className="ghost-stat-label">Offers</span>
+            </div>
+            <div className="ghost-stat-divider" />
+            <div className="ghost-stat">
+              <span className="ghost-stat-num ghost-stat-num--rejected">3</span>
+              <span className="ghost-stat-label">Rejected</span>
+            </div>
+          </div>
+
           {/* Enhanced glassmorphic Cards */}
           <div className="ghost-grid">
             {[1, 2, 3].map((i) => (
@@ -421,11 +448,11 @@ function handleCreateInterviewSkip() {
                   <div className="interview-bean-divider" />
                   <div className="interview-bean-list">
                     {upcomingInterviews.map((app, index) => (
-<div 
-  key={app.id} 
-  className="interview-bean-item"
-  style={{ '--item-index': index }}
->
+                      <div
+                        key={app.id}
+                        className="interview-bean-item"
+                        style={{ "--item-index": index }}
+                      >
                         <span
                           className={`interview-urgency-dot ${getUrgencyClass(app.interview_date)}`}
                         />
@@ -773,54 +800,62 @@ function handleCreateInterviewSkip() {
         </div>
       )}
 
-
       {isInterviewPopupOpen && (
-  <div className="confirm-overlay">
-    <div className="confirm-dialog interview-popup">
-      <h3>When is your interview?</h3>
-      <p>Add the date and time so we can remind you.</p>
+        <div className="confirm-overlay">
+          <div className="confirm-dialog interview-popup">
+            <h3>When is your interview?</h3>
+            <p>Add the date and time so we can remind you.</p>
 
-      <div className="auth-form">
-        <div className="auth-field">
-          <label>Date</label>
-          <input
-            type="date"
-            value={interviewForm.date}
-            min={new Date().toISOString().split('T')[0]}
-            onChange={(e) =>
-              setInterviewForm((prev) => ({ ...prev, date: e.target.value }))
-            }
-          />
+            <div className="auth-form">
+              <div className="auth-field">
+                <label>Date</label>
+                <input
+                  type="date"
+                  value={interviewForm.date}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    setInterviewForm((prev) => ({
+                      ...prev,
+                      date: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="auth-field">
+                <label>
+                  Time <span className="optional-label">(optional)</span>
+                </label>
+                <input
+                  type="time"
+                  value={interviewForm.time}
+                  onChange={(e) =>
+                    setInterviewForm((prev) => ({
+                      ...prev,
+                      time: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="confirm-actions">
+              <button
+                className="btn-secondary"
+                onClick={handleCreateInterviewSkip}
+              >
+                Add later
+              </button>
+              <button
+                className="btn-primary"
+                onClick={handleCreateInterviewConfirm}
+                disabled={!interviewForm.date}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="auth-field">
-          <label>Time <span className="optional-label">(optional)</span></label>
-          <input
-            type="time"
-            value={interviewForm.time}
-            onChange={(e) =>
-              setInterviewForm((prev) => ({ ...prev, time: e.target.value }))
-            }
-          />
-        </div>
-      </div>
-
-      <div className="confirm-actions">
-        <button className="btn-secondary" onClick={handleCreateInterviewSkip}>
-          Add later
-        </button>
-        <button
-          className="btn-primary"
-          onClick={handleCreateInterviewConfirm}
-          disabled={!interviewForm.date}
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
+      )}
     </main>
   );
 } // end of Dashboard function

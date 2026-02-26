@@ -162,6 +162,7 @@
   max-width: 650px;
   text-align: center;
   line-height: 1.6;
+  
 }
 
 .dashboard-cta {
@@ -274,6 +275,67 @@
 
 .ghost-card:nth-child(3) {
   animation: cardFloat 6s ease-in-out infinite 1s, ghostBreath 6s ease-in-out infinite;
+}
+
+
+/* Stats Strip */
+.ghost-stats-strip {
+  display: flex;
+  align-items: center;
+  margin-bottom: 36px;
+  background: rgba(38, 40, 51, 0.55);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(179, 140, 164, 0.12);
+  border-radius: 999px;
+  padding: 10px 28px;
+}
+.ghost-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0 20px;
+}
+.ghost-stat-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(139, 131, 120, 0.2);
+  flex-shrink: 0;
+}
+.ghost-stat-num {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, #E6E6EB, #B38CA4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.ghost-stat-num--interview {
+  background: linear-gradient(135deg, #C4A25A, #e0bb6e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.ghost-stat-num--offer {
+  background: linear-gradient(135deg, #6FAF8A, #92d1ac);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.ghost-stat-num--rejected {
+  background: linear-gradient(135deg, #A86868, #c48a8a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.ghost-stat-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 /* Ghost card gradient overlay */
