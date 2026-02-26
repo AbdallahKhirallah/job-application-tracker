@@ -52,11 +52,19 @@ export default function ApplicationCard({
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [formData, setFormData] = useState({ company: "", role: "", status: "", location: "", appliedAt: "", source: "", notes: "",interviewDate: "",  });
-    const [isInterviewPopupOpen, setIsInterviewPopupOpen] = useState(false);  
-  const [interviewForm, setInterviewForm] = useState({ date: '', time: '',});
-  const [pendingSave, setPendingSave] = useState(null);  
-
+  const [formData, setFormData] = useState({
+    company: "",
+    role: "",
+    status: "",
+    location: "",
+    appliedAt: "",
+    source: "",
+    notes: "",
+    interviewDate: "",
+  });
+  const [isInterviewPopupOpen, setIsInterviewPopupOpen] = useState(false);
+  const [interviewForm, setInterviewForm] = useState({ date: "", time: "" });
+  const [pendingSave, setPendingSave] = useState(null);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -114,13 +122,13 @@ export default function ApplicationCard({
     };
 
     delete dataToSave.appliedAt;
-    delete dataToSave.interviewDate; 
+    delete dataToSave.interviewDate;
 
-        //if status is being changed to interview, show the date popup first
-    if (formData.status === 'interview') {
-      setPendingSave(dataToSave);       //to hold the data while popup is open
+    //if status is being changed to interview, show the date popup first
+    if (formData.status === "interview") {
+      setPendingSave(dataToSave); //to hold the data while popup is open
       setIsEditOpen(false);
-      setIsInterviewPopupOpen(true);    //to show the popup
+      setIsInterviewPopupOpen(true); //to show the popup
       return;
     }
 
@@ -133,11 +141,12 @@ export default function ApplicationCard({
   function handleInterviewDateConfirm() {
     // Combine date and time into one timestamp
     //"2026-02-20" + "14:00" -> "2026-02-20T14:00"
-    const interview_date = interviewForm.date && interviewForm.time
-      ? `${interviewForm.date}T${interviewForm.time}`
-      : interviewForm.date
-        ? `${interviewForm.date}T00:00`
-        : null;
+    const interview_date =
+      interviewForm.date && interviewForm.time
+        ? `${interviewForm.date}T${interviewForm.time}`
+        : interviewForm.date
+          ? `${interviewForm.date}T00:00`
+          : null;
 
     onEdit({
       ...pendingSave,
@@ -147,7 +156,7 @@ export default function ApplicationCard({
     // resetting everything
     setIsInterviewPopupOpen(false);
     setPendingSave(null);
-    setInterviewForm({ date: '', time: '' });
+    setInterviewForm({ date: "", time: "" });
     setIsMenuOpen(false);
   }
 
@@ -155,22 +164,36 @@ export default function ApplicationCard({
   function handleInterviewDateSkip() {
     onEdit({
       ...pendingSave,
-      interview_date: null,   //saving without a date 
+      interview_date: null, //saving without a date
     });
 
     // resetting everything
     setIsInterviewPopupOpen(false);
     setPendingSave(null);
-    setInterviewForm({ date: '', time: '' });
+    setInterviewForm({ date: "", time: "" });
     setIsMenuOpen(false);
   }
 
+  // Copying Company/Role
+  const [copiedField, setCopiedField] = useState(null);
+
+  function copyToClipboard(text, field) {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 1500);
+  }
 
   return (
     <>
       <article ref={cardRef} className="app-card" style={style}>
         <header className="app-card-header">
-          <h2 className="app-card-company">{company}</h2>
+          <h2
+            className="app-card-company"
+            onClick={() => copyToClipboard(company, "company")}
+            title="Click to copy"
+          >
+            {copiedField === "company" ? "✓ Copied" : company}
+          </h2>
         </header>
 
         <span className={`status-badge status-${status}`}>{status}</span>
@@ -208,7 +231,13 @@ export default function ApplicationCard({
         </div>
 
         <div className="app-card-body">
-          <p className="app-card-role">{role}</p>
+          <p
+            className="app-card-role"
+            onClick={() => copyToClipboard(role, "role")}
+            title="Click to copy"
+          >
+            {copiedField === "role" ? "✓ Copied" : role}
+          </p>
         </div>
 
         {isExpanded && (
@@ -251,11 +280,10 @@ export default function ApplicationCard({
               <div className="past-interview-prompt">
                 <p className="past-interview-text">
                   Interview was {Math.abs(daysUntil)}{" "}
-
                   {Math.abs(daysUntil) === 1 ? "day" : "days"} ago · How did it
                   go?
                 </p>
-                
+
                 <div className="past-interview-actions">
                   <button
                     className="past-interview-btn offer"
@@ -398,11 +426,10 @@ export default function ApplicationCard({
         </div>
       )}
 
-{/* THE INTERVIEW DATE POPUP */}
+      {/* THE INTERVIEW DATE POPUP */}
       {isInterviewPopupOpen && (
         <div className="confirm-overlay">
           <div className="confirm-dialog interview-popup">
-
             <h3>When is your interview ?</h3>
             <p>Add the date and time so we can remind you.</p>
 
@@ -412,25 +439,32 @@ export default function ApplicationCard({
                 <input
                   type="date"
                   value={interviewForm.date}
-                  min={new Date().toISOString().split('T')[0]} //preventing past dates
+                  min={new Date().toISOString().split("T")[0]} //preventing past dates
                   onChange={(e) =>
-                    setInterviewForm((prev) => ({ ...prev, date: e.target.value }))
+                    setInterviewForm((prev) => ({
+                      ...prev,
+                      date: e.target.value,
+                    }))
                   }
                 />
               </div>
 
               <div className="auth-field">
-                <label>Time <span className="optional-label">(optional)</span></label>
+                <label>
+                  Time <span className="optional-label">(optional)</span>
+                </label>
                 <input
                   type="time"
                   value={interviewForm.time}
                   onChange={(e) =>
-                    setInterviewForm((prev) => ({ ...prev, time: e.target.value }))
+                    setInterviewForm((prev) => ({
+                      ...prev,
+                      time: e.target.value,
+                    }))
                   }
                 />
               </div>
             </div>
-
 
             <div className="confirm-actions">
               <button
@@ -443,16 +477,14 @@ export default function ApplicationCard({
               <button
                 className="btn-primary"
                 onClick={handleInterviewDateConfirm}
-                disabled={!interviewForm.date}  //date is required to confirm (confirm button is disabled until the user picks a date).
+                disabled={!interviewForm.date} //date is required to confirm (confirm button is disabled until the user picks a date).
               >
                 Confirm
               </button>
             </div>
-
           </div>
         </div>
       )}
     </>
   );
 }
-      

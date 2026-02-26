@@ -301,3 +301,15 @@
   line-height: 1.5;
   color: var(--text-primary);
 }
+
+/*Copy cursor styles*/
+.app-card-company,
+.app-card-role {
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+
+.app-card-company:hover,
+.app-card-role:hover {
+  opacity: 0.75;
+}
