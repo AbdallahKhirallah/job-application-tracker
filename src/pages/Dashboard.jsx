@@ -704,9 +704,10 @@ const statusCounts = useMemo(() => {
         {/* Applications grid */}
         {!loading && !error && filteredApplications.length > 0 && (
           <div className="dashboard-grid">
-            {filteredApplications.map((app) => (
+            {filteredApplications.map((app, index) => (
               <ApplicationCard
                 key={app.id}
+                style={{ animationDelay: `${index * 60}ms` }}
                 id={app.id}
                 company={app.company}
                 role={app.role}

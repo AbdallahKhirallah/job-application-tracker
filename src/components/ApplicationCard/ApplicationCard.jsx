@@ -15,6 +15,7 @@ export default function ApplicationCard({
   onDelete,
   onEdit,
   cardRef,
+  style,
 }) {
   // Formatting interview date for display  "Feb 20 at 2:00 PM"
   function formatInterviewDate(dateStr) {
@@ -167,7 +168,7 @@ export default function ApplicationCard({
 
   return (
     <>
-      <article ref={cardRef} className="app-card">
+      <article ref={cardRef} className="app-card" style={style}>
         <header className="app-card-header">
           <h2 className="app-card-company">{company}</h2>
         </header>
