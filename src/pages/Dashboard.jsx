@@ -278,6 +278,7 @@ const statusCounts = useMemo(() => {
     try {
       const newApplication = await applicationsAPI.create(data);
       setApplications((prev) => [newApplication, ...prev]);
+      setIsCreateOpen(false); 
       setCreateFormData({
         company: "",
         role: "",
@@ -371,7 +372,7 @@ const statusCounts = useMemo(() => {
             </span>
           </h1>
 
-          <p className="dashboard-subtitle">
+          <p className="dashboard-subtitle--hero">
             Save applications, track statuses, and manage your internship search
             with clarity.
           </p>
@@ -445,6 +446,7 @@ const statusCounts = useMemo(() => {
         {/* Header with expanding filter bar */}
 
         <h1 className="dashboard-title">Applications</h1>
+        <p className="dashboard-subtitle">Your job search, all in one place.</p>
         <div className="dashboard-stats-strip">
   <div className="ghost-stat">
     <span className="ghost-stat-num">{statusCounts.applied || '—'}</span>
