@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import ApplicationCard from "../components/ApplicationCard/ApplicationCard";
 import "./Dashboard.css";
 import { applicationsAPI } from "../services/api";
+import WeeklyGoalBar from "../components/WeeklyGoalBar/WeeklyGoalBar";
 
 // Filtering statuses
 const STATUS_OPTIONS = ["applied", "interview", "offer", "rejected"];
@@ -448,6 +449,10 @@ const statusCounts = useMemo(() => {
         <h1 className="dashboard-title">Applications</h1>
         <p className="dashboard-subtitle">Your job search, all in one place.</p>
         <div className="dashboard-stats-strip">
+
+          {/* Weekly Goal Bar */}
+<WeeklyGoalBar applications={applications} />
+
   <div className="ghost-stat">
     <span className="ghost-stat-num">{statusCounts.applied || '—'}</span>
     <span className="ghost-stat-label">Applied</span>

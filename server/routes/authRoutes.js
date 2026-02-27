@@ -377,5 +377,51 @@ router.delete('/account', authenticateToken, async (req, res) => {
 });
 
 
+
+// ========================================
+// GET WEEKLY GOAL
+// ========================================
+// GET /api/auth/goal
+
+router.get('/goal', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT weekly_goal FROM users WHERE id = $1',
+      [req.userId]
+    );
+    res.json({ weekly_goal: result.rows[0].weekly_goal });
+  } catch (error) {
+    console.error('Error fetching goal:', error);
+    res.status(500).json({ message: 'Error fetching goal' });
+  }
+});
+
+// ========================================
+// UPDATE WEEKLY GOAL
+// ========================================
+// PUT /api/auth/goal
+
+router.put('/goal', authenticateToken, async (req, res) => {
+  try {
+    const goal = parseInt(req.body.weekly_goal, 10);
+
+    if (isNaN(goal) || goal < 1 || goal > 100) {
+      return res.status(400).json({ message: 'Goal must be a number between 1 and 100' });
+    }
+
+    const result = await pool.query(
+      'UPDATE users SET weekly_goal = $1 WHERE id = $2 RETURNING weekly_goal',
+      [goal, req.userId]
+    );
+
+    
+    res.json({ weekly_goal: result.rows[0].weekly_goal });
+  } catch (error) {
+    console.error('Error updating goal:', error);
+    res.status(500).json({ message: 'Error updating goal' });
+  }
+});
+
+
 // Export the router so server.js can use it
 module.exports = router;

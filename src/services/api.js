@@ -4,7 +4,7 @@
 //This file handles all communication with the backend API
 
 // Base URL for backend API
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 // ============================================
 // HELPER FUNCTIONS
@@ -12,39 +12,34 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 // Getting the auth token from localStorage
 const getToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
-
 
 // Saving the auth token to localStorage
 const setToken = (token) => {
-  localStorage.setItem('token', token);
+  localStorage.setItem("token", token);
 };
 
 // Removing the auth token from localStorage
 const removeToken = () => {
-  localStorage.removeItem('token');
+  localStorage.removeItem("token");
 };
 
 // Saving user data to localStorage
 const setUser = (user) => {
-  localStorage.setItem('user', JSON.stringify(user));
+  localStorage.setItem("user", JSON.stringify(user));
 };
 
 // Getting user data from localStorage
 const getUser = () => {
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem("user");
   return user ? JSON.parse(user) : null;
 };
 
-
-
 // Removing user data from localStorage
 const removeUser = () => {
-  localStorage.removeItem('user');
+  localStorage.removeItem("user");
 };
-
-
 
 // ============================================
 // API REQUEST HELPER
@@ -54,15 +49,13 @@ const removeUser = () => {
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
 
-
-    // Client side Token expiry check 
+  // Client side Token expiry check
   if (token) {
     try {
-
       // Decoding JWT payload to extract expiration time
-      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
       const expiryTime = tokenPayload.exp * 1000; // exp is in seconds, convert to ms
-      
+
       // if token expired, logout user and refresh page
       if (Date.now() >= expiryTime) {
         removeToken();
@@ -70,7 +63,6 @@ const apiRequest = async (endpoint, options = {}) => {
         window.location.reload();
         return;
       }
-
     } catch (e) {
       // Token malformed , clear auth data
       removeToken();
@@ -80,17 +72,15 @@ const apiRequest = async (endpoint, options = {}) => {
     }
   }
 
-  
   // headers
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...options.headers,
-
   };
 
   // Authorization header if token exists
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
   try {
@@ -104,26 +94,26 @@ const apiRequest = async (endpoint, options = {}) => {
 
     // If response isn't ok , throw an error
     if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
+      throw new Error(data.message || "Something went wrong");
     }
 
     return data;
   } catch (error) {
-    console.error('API Request Error:' , error);
+    console.error("API Request Error:", error);
 
     throw error;
   }
 };
 
 // ====================================
-// AUTHENTICATION API 
+// AUTHENTICATION API
 // ====================================
 
 export const authAPI = {
   // Registering a new user
   register: async (name, email, password) => {
-    const data = await apiRequest('/auth/register', {
-      method: 'POST',
+    const data = await apiRequest("/auth/register", {
+      method: "POST",
       body: JSON.stringify({ name, email, password }),
     });
 
@@ -135,9 +125,9 @@ export const authAPI = {
   },
 
   // Login existing user
-    login: async (email, password) => {
-    const data = await apiRequest('/auth/login', {
-      method: 'POST',
+  login: async (email, password) => {
+    const data = await apiRequest("/auth/login", {
+      method: "POST",
       body: JSON.stringify({ email, password }),
     });
 
@@ -146,15 +136,13 @@ export const authAPI = {
     setUser(data.user);
 
     return data;
-
   },
 
   // Logout user
   logout: () => {
-    removeToken() ;
+    removeToken();
     removeUser();
   },
-
 
   // Checking if user is logged in
   isLoggedIn: () => {
@@ -164,80 +152,67 @@ export const authAPI = {
   // Getting current user from localStorage
   getCurrentUser: () => {
     return getUser();
-    
   },
 
   // Changing password for logged user
-changePassword: async (currentPassword, newPassword) => {
+  changePassword: async (currentPassword, newPassword) => {
+    const data = await apiRequest("/auth/change-password", {
+      method: "PUT",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    return data;
+  },
 
-  const data = await apiRequest('/auth/change-password', {
-    method: 'PUT',        
-    body: JSON.stringify({ currentPassword, newPassword }),
-  });
-  return data;
-},
+  // updating user profile
+  updateProfile: async (name, email) => {
+    const data = await apiRequest("/auth/profile", {
+      method: "PUT",
+      body: JSON.stringify({ name, email }),
+    });
 
+    // update localStorage with new user data
+    setUser(data.user);
 
-// updating user profile
-updateProfile: async (name, email) => {
-  const data = await apiRequest('/auth/profile', {
-    method: 'PUT',
-    body: JSON.stringify({ name, email }),
-  });
-  
-  // update localStorage with new user data
-  setUser(data.user);
-  
-  return data;
-},
+    return data;
+  },
 
+  // Deleting user account
+  deleteAccount: async (password) => {
+    const data = await apiRequest("/auth/account", {
+      method: "DELETE",
+      body: JSON.stringify({ password }),
+    });
 
+    // to clear localStorage after deletion
+    removeToken();
+    removeUser();
 
-// Deleting user account
-deleteAccount: async (password) => {
-  const data = await apiRequest('/auth/account', {
-    method: 'DELETE',
-    body: JSON.stringify({ password }),
-  });
-  
-  // to clear localStorage after deletion
-  removeToken();
-  removeUser();
-  
-  return data;
-},
-
-
+    return data;
+  },
 };
-
-
 
 // ============================================
 // APPLICATIONS API
 // ============================================
 
 export const applicationsAPI = {
-
-
-
   // ********** GET ALL APPLICATIONS ***********
 
   // Fetches all job applications for the logged-in user
   getAll: async () => {
     try {
       // GET request to /api/applications
-      const data = await apiRequest('/applications', {
-        method: 'GET',
+      const data = await apiRequest("/applications", {
+        method: "GET",
       });
 
       // Returns the applications array from the response (data.applications)
       return data.applications;
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      console.error("Error fetching applications:", error);
       throw error;
     }
   },
-
 
   // ********* GET A SINGLE APPLICATION BY ID ************
 
@@ -245,17 +220,15 @@ export const applicationsAPI = {
   getById: async (id) => {
     try {
       const data = await apiRequest(`/applications/${id}`, {
-        method: 'GET',
+        method: "GET",
       });
 
       return data.application;
     } catch (error) {
-      console.error('Error fetching application:', error);
+      console.error("Error fetching application:", error);
       throw error;
-
     }
   },
-
 
   // *************** CREATE NEW APPLICATION *****************
 
@@ -270,7 +243,7 @@ export const applicationsAPI = {
   //   notes: "Referred by Sam "
 
   // });
-  
+
   create: async (applicationData) => {
     try {
       // applicationData should be an object with:
@@ -281,53 +254,43 @@ export const applicationsAPI = {
       // - applied_at (optional, date string)
       // - source  (optional)
       // - notes (optional)
-      
-      const data = await apiRequest('/applications', {
-        method: 'POST',
+
+      const data = await apiRequest("/applications", {
+        method: "POST",
         body: JSON.stringify(applicationData),
       });
 
-
       return data.application;
     } catch (error) {
-      console.error('Error creating application:', error);
+      console.error("Error creating application:", error);
       throw error;
     }
   },
-
-
-
 
   // ***************** UPDATE APPLICATION ********************
   // Updates an existing application
 
- 
   // const updated = await applicationsAPI.update(5, {
   //   status: "interview" ,
   //   notes: "Phone screen scheduled for next week"
   // } );
-  
+
   update: async (id, applicationData) => {
     try {
-
-
       // applicationData can include any fields you want to update without need to update all fields
       // COALESCE is used to keep old values for fields not included in backend
-      
-      
+
       const data = await apiRequest(`/applications/${id}`, {
-        method: 'PUT',
+        method: "PUT",
         body: JSON.stringify(applicationData),
       });
 
-
       return data.application;
     } catch (error) {
-      console.error('Error updating application:', error);
+      console.error("Error updating application:", error);
       throw error;
     }
   },
-
 
   // ***************** DELETE APPLICATION **********************
 
@@ -335,36 +298,52 @@ export const applicationsAPI = {
   delete: async (id) => {
     try {
       const data = await apiRequest(`/applications/${id}`, {
-        method: 'DELETE',
-
+        method: "DELETE",
       });
 
       return data.deletedApplication;
     } catch (error) {
-      console.error('Error deleting application:', error);
+      console.error("Error deleting application:", error);
       throw error;
-
     }
   },
 
- 
   // ***************** GET STATISTICS *****************
 
-  // Gets statistics about applications 
+  // Gets statistics about applications
   // ex returns: { total: 10 , byStatus : { applied : 5, interview : 3, offer: 1, rejected: 1 } }
-  
+
   getStats: async () => {
     try {
-      const data = await apiRequest('/applications/stats/summary', {
-        method: 'GET',
+      const data = await apiRequest("/applications/stats/summary", {
+        method: "GET",
       });
 
       return data.stats;
     } catch (error) {
-      console.error('Error fetching statistics:', error);
+      console.error("Error fetching statistics:", error);
       throw error;
-      
     }
   },
 };
 
+// ============================================
+// WEEKLY GOAL API
+// ============================================
+
+export const goalAPI = {
+  // GET current weekly goal
+  getGoal: async () => {
+    const data = await apiRequest("/auth/goal", { method: "GET" });
+    return data.weekly_goal;
+  },
+
+  // UPDATE weekly goal
+  updateGoal: async (weekly_goal) => {
+    const data = await apiRequest("/auth/goal", {
+      method: "PUT",
+      body: JSON.stringify({ weekly_goal }),
+    });
+    return data.weekly_goal;
+  },
+};

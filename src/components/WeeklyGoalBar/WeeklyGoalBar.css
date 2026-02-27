@@ -1,0 +1,138 @@
+/* ============================
+        WEEKLY GOAL BAR
+   ============================ */
+
+.weekly-goal-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+
+  max-width: 380px;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+
+  transition: box-shadow 240ms ease;
+}
+
+.weekly-goal-bar.goal-reached {
+  box-shadow:
+    inset 0 0 0 1px rgba(111, 175, 138, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.weekly-goal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.weekly-goal-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.weekly-goal-bar.goal-reached .weekly-goal-label {
+  color: var(--status-offer);
+}
+
+.weekly-goal-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.weekly-goal-count strong {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.weekly-goal-separator {
+  opacity: 0.4;
+}
+
+.weekly-goal-target {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 160ms ease;
+}
+
+.weekly-goal-target:hover {
+  color: var(--text-primary);
+}
+
+.weekly-goal-edit-icon {
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.weekly-goal-target:hover .weekly-goal-edit-icon {
+  opacity: 0.6;
+}
+
+.weekly-goal-unit {
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+.weekly-goal-input {
+  width: 28px;
+  background: var(--bg-elevated);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(179, 140, 164, 0.45);
+  outline: none;
+
+  /* Hide number arrows */
+  -moz-appearance: textfield;
+}
+
+.weekly-goal-input::-webkit-outer-spin-button,
+.weekly-goal-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Progress track */
+.weekly-goal-track {
+  height: 4px;
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.weekly-goal-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background-color: var(--accent-rose);
+
+  transition:
+    width 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 400ms ease;
+}
+
+.weekly-goal-bar.goal-reached .weekly-goal-fill {
+  background-color: var(--status-offer);
+  animation: goalPulse 1.2s ease-out;
+}
+
+@keyframes goalPulse {
+  0%   { opacity: 1; }
+  40%  { opacity: 0.5; }
+  100% { opacity: 1; }
+}
