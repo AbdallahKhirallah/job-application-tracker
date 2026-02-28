@@ -11,9 +11,13 @@ const dotenv = require('dotenv');
 const pool = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const applicationsRoutes = require('./routes/applications');
+const { checkAndSendReminders } = require('./jobs/reminderJob');
 
 // load environment variables from .env file
 dotenv.config();
+
+// start the daily interview reminder scheduler
+checkAndSendReminders();
 
 // Fail fast if JWT_SECRET is missing (security-critical)
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
