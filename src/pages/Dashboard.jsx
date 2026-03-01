@@ -619,7 +619,9 @@ const statusCounts = useMemo(() => {
                     type="text"
                     placeholder="Company or role…"
                     value={filterSearch}
-                    onChange={(e) => setFilterSearch(e.target.value)}
+                    onChange={(e) => isFilterOpen && setFilterSearch(e.target.value)}
+                    readOnly={!isFilterOpen}
+                    tabIndex={isFilterOpen ? 0 : -1}
                   />
                   {filterSearch && (
                     <button
@@ -654,7 +656,9 @@ const statusCounts = useMemo(() => {
                   className="filter-input filter-date-input"
                   type="date"
                   value={filterDateFrom}
-                  onChange={(e) => setFilterDateFrom(e.target.value)}
+                  onChange={(e) => isFilterOpen && setFilterDateFrom(e.target.value)}
+                  readOnly={!isFilterOpen}
+                  tabIndex={isFilterOpen ? 0 : -1}
                 />
 
                 {activeFilterCount > 0 && (
