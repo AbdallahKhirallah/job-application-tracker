@@ -32,7 +32,7 @@ function Navbar({ isLoggedIn, onOpenAuth, onLogout, onOpenProfile }) {
       
       {/* Logo with particles - ALWAYS VISIBLE */}
       <div className="navbar-logo-wrapper">
-        <span className="navbar-logo">JAT</span>
+        <img src="/jat-logo.png" alt="JAT" className="navbar-logo" style={{ height: '28px', width: 'auto' }} />
         <div className="navbar-logo-particles">
           <div className="particle particle-1" />
           <div className="particle particle-2" />
