@@ -486,18 +486,21 @@ const statusCounts = useMemo(() => {
               <div
                 className={`interview-bean ${isInterviewBeanOpen ? "open" : ""}`}
                 onMouseEnter={() => {
+                  // Cancel any pending leave and open more quickly for responsive UX
                   clearTimeout(interviewLeaveTimeout.current);
                   clearTimeout(interviewHoverTimeout.current);
                   interviewHoverTimeout.current = setTimeout(
                     () => setIsInterviewBeanOpen(true),
-                    60,
+                    30,
                   );
                 }}
                 onMouseLeave={() => {
+                  // Delay the close a bit longer to avoid flicker when cursor moves
+                  // between the trigger and expanded content
                   clearTimeout(interviewHoverTimeout.current);
                   interviewLeaveTimeout.current = setTimeout(
                     () => setIsInterviewBeanOpen(false),
-                    150,
+                    300,
                   );
                 }}
               >
@@ -509,7 +512,25 @@ const statusCounts = useMemo(() => {
                   </span>
                 </div>
                 {/*Expanded state : interview list */}
-                <div className="interview-bean-content">
+                <div
+                  className="interview-bean-content"
+                  onMouseEnter={() => {
+                    // ensure content hover keeps bean open
+                    clearTimeout(interviewLeaveTimeout.current);
+                    clearTimeout(interviewHoverTimeout.current);
+                    interviewHoverTimeout.current = setTimeout(
+                      () => setIsInterviewBeanOpen(true),
+                      0,
+                    );
+                  }}
+                  onMouseLeave={() => {
+                    clearTimeout(interviewHoverTimeout.current);
+                    interviewLeaveTimeout.current = setTimeout(
+                      () => setIsInterviewBeanOpen(false),
+                      300,
+                    );
+                  }}
+                >
                   <div className="interview-bean-divider" />
                   <div className="interview-bean-list">
                     {upcomingInterviews.map((app, index) => (

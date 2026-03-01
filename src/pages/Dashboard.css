@@ -1028,6 +1028,8 @@
   position: relative;
   max-height: 44px;
   max-width: 145px;
+  /* Use an explicit collapsed width so closing animates back to a predictable size */
+  width: 145px;
   overflow: hidden;
 
   background: var(--bg-elevated);
@@ -1041,14 +1043,17 @@
 
   /* Closing transitions: vertical collapse first (no delay), then smooth horizontal collapse (slight overlap) */
 transition:
-    max-width 500ms cubic-bezier(0.16, 1, 0.3, 1) 200ms,
-    max-height 350ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 300ms ease,
-    background-color 280ms ease,
-    box-shadow 300ms ease,
-    border-radius 400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms,
-    flex-direction 0ms 180ms,
-    padding 400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms;
+  /* make width collapse promptly on close to avoid a wide, flattened shape */
+  /* animate width together with max-width to avoid transient over-expansion */
+  width 420ms cubic-bezier(0.16, 1, 0.3, 1) 0ms,
+  max-width 420ms cubic-bezier(0.16, 1, 0.3, 1) 0ms,
+  max-height 340ms cubic-bezier(0.16, 1, 0.3, 1) 0ms,
+  border-color 260ms ease 0ms,
+  background-color 240ms ease 0ms,
+  box-shadow 260ms ease 0ms,
+  border-radius 360ms cubic-bezier(0.16, 1, 0.3, 1) 0ms,
+  flex-direction 0ms 0ms,
+  padding 360ms cubic-bezier(0.16, 1, 0.3, 1) 0ms;
 
   will-change: max-width, max-height;
   flex-shrink: 0;
@@ -1056,7 +1061,11 @@ transition:
 }
 
 .interview-bean.open {
-  max-width: 860px;
+  /* cap the open width to a comfortable, responsive size so it doesn't leave
+    a large empty area on wide screens. Use min/max of px and viewport units. */
+  max-width: min(720px, 72vw);
+  /* allow width to size to content up to max-width */
+  width: auto;
   max-height: 500px;
   border-radius: 12px;
   border-color: rgba(179, 140, 164, 0.4);
@@ -1070,14 +1079,15 @@ transition:
 
 /* Opening transitions: both start together, width finishes first naturally */
   transition:
-    max-width 500ms cubic-bezier(0.16, 1, 0.3, 1),
-    max-height 600ms cubic-bezier(0.16, 1, 0.3, 1) 80ms,
-    border-color 300ms ease,
-    background-color 280ms ease,
-    box-shadow 300ms ease,
-    border-radius 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms,
-    flex-direction 0ms 80ms,
-    padding 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms;
+  width 420ms cubic-bezier(0.16, 1, 0.3, 1) 0ms,
+  max-width 420ms cubic-bezier(0.16, 1, 0.3, 1) 0ms,
+  max-height 560ms cubic-bezier(0.16, 1, 0.3, 1) 60ms,
+  border-color 260ms ease 0ms,
+  background-color 240ms ease 0ms,
+  box-shadow 260ms ease 0ms,
+  border-radius 360ms cubic-bezier(0.16, 1, 0.3, 1) 40ms,
+  flex-direction 0ms 40ms,
+  padding 360ms cubic-bezier(0.16, 1, 0.3, 1) 40ms;
 }
 
 /* Collapsed trigger area */
@@ -1089,10 +1099,35 @@ transition:
   gap: 5px;
   padding: 0 16px;
   color: var(--accent-rose);
-  pointer-events: none;
+  /* allow pointer-events so the trigger area remains interactive while hovered */
+  pointer-events: auto;
   white-space: nowrap;
   width: 100%;
   transition: opacity 300ms ease;
+}
+
+/* Invisible buffer on the right to prevent flicker when moving cursor near the edge */
+.interview-bean::after {
+  content: "";
+  position: absolute;
+  right: -8px; /* extend hit area 8px to the right */
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  /* Only let this invisible buffer receive pointer events when the bean is closed
+     to prevent it from interfering once the bean has expanded. */
+  pointer-events: none;
+}
+
+.interview-bean:not(.open)::after {
+  pointer-events: auto;
+}
+
+/* When open, ensure the buffer doesn't participate and can't cause layout jitter */
+.interview-bean.open::after {
+  pointer-events: none;
+  right: 0;
+  width: 0;
 }
 
 .interview-bean.open .interview-bean-trigger {
