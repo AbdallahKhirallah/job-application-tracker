@@ -10,6 +10,7 @@ export default function ApplicationCard({
   source,
   notes,
   interviewDate,
+  resumeUrl,
   isExpanded,
   onToggle,
   onDelete,
@@ -303,7 +304,32 @@ export default function ApplicationCard({
 
             <div className="detail-notes">
               <span className="detail-label">Notes</span>
-              <p className={!notes ? "notes-empty" : ""}>{notes || "No notes added"}</p>
+              <p className={!notes ? "notes-empty" : ""}>
+                {notes || "No notes added"}
+              </p>
+            </div>
+
+
+            {/* Resume section */}
+            <div className="detail-resume">
+              <span className="detail-label">Resume / CV</span>
+              {resumeUrl ? (
+                <a
+                  href={resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="resume-download-link"
+                >
+                  📄 View Resume
+                </a>
+              ) : (
+                <span
+                  className="resume-upload-disabled"
+                  title="Resume upload coming soon — requires cloud storage setup"
+                >
+                  📎 Upload CV <span className="coming-soon-tag">Coming</span>
+                </span>
+              )}
             </div>
           </div>
         )}

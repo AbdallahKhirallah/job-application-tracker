@@ -329,3 +329,51 @@
     transform: none;
   }
 }
+
+
+/* ==================================
+      RESUME  SECTION
+   =================================== */
+
+.detail-resume {
+  font-size: 0.8rem;
+  padding-top: 12px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(139, 131, 120, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.resume-download-link {
+  color: var(--accent-micro);
+  text-decoration: none;
+  transition: opacity 180ms ease;
+}
+
+.resume-download-link:hover {
+  opacity: 0.75;
+}
+
+.resume-upload-disabled {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px dashed rgba(179, 140, 164, 0.3);
+  color: var(--text-secondary);
+  opacity: 0.6;
+  cursor: not-allowed;
+  font-size: 0.8rem;
+  width: fit-content;
+}
+
+.coming-soon-tag {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: rgba(179, 140, 164, 0.15);
+  color: var(--accent-micro);
+  letter-spacing: 0.3px;
+}
