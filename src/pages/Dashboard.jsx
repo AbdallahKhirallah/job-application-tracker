@@ -35,6 +35,8 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const expandedCardRef = useRef(null);
 
   const filterHoverTimeout = useRef(null);
+  const filterLeaveTimeout = useRef(null);
+  const filterFocusRef = useRef(false);
 
   const interviewHoverTimeout = useRef(null);
   const interviewLeaveTimeout = useRef(null);
@@ -559,14 +561,16 @@ const statusCounts = useMemo(() => {
             <div
               className={`filter-bar ${isFilterOpen ? "open" : ""}`}
               onMouseEnter={() => {
-                filterHoverTimeout.current = setTimeout(
-                  () => setIsFilterOpen(true),
-                  60,
-                );
+                clearTimeout(filterLeaveTimeout.current);
+                clearTimeout(filterHoverTimeout.current);
+                filterHoverTimeout.current = setTimeout(() => setIsFilterOpen(true), 60);
               }}
               onMouseLeave={() => {
                 clearTimeout(filterHoverTimeout.current);
-                setIsFilterOpen(false);
+                // Delay collapse slightly; if an input inside is focused, don't collapse
+                filterLeaveTimeout.current = setTimeout(() => {
+                  if (!filterFocusRef.current) setIsFilterOpen(false);
+                }, 300);
               }}
             >
               {/* Icon trigger */}
@@ -622,6 +626,11 @@ const statusCounts = useMemo(() => {
                     onChange={(e) => isFilterOpen && setFilterSearch(e.target.value)}
                     readOnly={!isFilterOpen}
                     tabIndex={isFilterOpen ? 0 : -1}
+                    onFocus={() => {
+                      // if user somehow focuses the search field, ensure filter stays open
+                      clearTimeout(filterLeaveTimeout.current);
+                      setIsFilterOpen(true);
+                    }}
                   />
                   {filterSearch && (
                     <button
@@ -656,9 +665,18 @@ const statusCounts = useMemo(() => {
                   className="filter-input filter-date-input"
                   type="date"
                   value={filterDateFrom}
-                  onChange={(e) => isFilterOpen && setFilterDateFrom(e.target.value)}
-                  readOnly={!isFilterOpen}
-                  tabIndex={isFilterOpen ? 0 : -1}
+                  onChange={(e) => setFilterDateFrom(e.target.value)}
+                  onFocus={() => {
+                    // mark focused so the bar doesn't collapse while interacting
+                    filterFocusRef.current = true;
+                    clearTimeout(filterLeaveTimeout.current);
+                    setIsFilterOpen(true);
+                  }}
+                  onBlur={() => {
+                    // when focus leaves the date input, allow collapse after short delay
+                    filterFocusRef.current = false;
+                    filterLeaveTimeout.current = setTimeout(() => setIsFilterOpen(false), 300);
+                  }}
                 />
 
                 {activeFilterCount > 0 && (
