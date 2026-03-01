@@ -365,6 +365,12 @@ button:focus-visible {
   border-top: 1px solid rgba(168, 104, 104, 0.2);
 }
 
+/* Add a little extra top spacing between fields inside the danger zone so
+   the password input's label / instruction isn't visually stuck to the field */
+.profile-danger-zone .auth-field + .auth-field {
+  margin-top: 8px;
+}
+
 .danger-zone-title {
   color: var(--status-rejected);
   font-size: 0.95rem;
