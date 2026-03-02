@@ -1,54 +1,63 @@
-the project strucrture i put in an other file :PROJECT-STRUCTURE.md:
+# Project Structure
 
-```markdown
-## Project Structure
+This file documents the current repository layout and the purpose of key files and folders.
 
 ```
 job-application-tracker/
-├── index.html                  # Vite entry point
-├── vite.config.js
-├── package.json
-├── eslint.config.js
-│
+├── README.md                   # Project README 
+├── index.html                  # Vite HTML entry
+├── package.json                # Frontend scripts & deps
+├── vite.config.js              # Vite config
+├── eslint.config.js            # ESLint configuration
 ├── public/
-│   └── jat.svg                 # App icon
+│   |── jat.svg                 # App icon/ public assets
+│   └── jat-logo.png            # Logo
 │
 ├── src/                        # React frontend
-│   ├── main.jsx                # App entry
-│   ├── App.jsx                 # Root component & routing
-│   ├── index.css
+│   ├── main.jsx                # React entry (mounts App)
+│   ├── App.jsx                 # Root app wiring (auth/profile modals)
+│   ├── index.css               # Global CSS variables & styles
 │   ├── styles/
-│   │   └── buttons.css
+│   │   └── buttons.css         # Shared button styles
 │   ├── layout/
-│   │   ├── Navbar.jsx          # Top navigation bar
+│   │   ├── Navbar.jsx          # Top navigation
 │   │   └── Navbar.css
 │   ├── pages/
-│   │   ├── Dashboard.jsx       # Main dashboard view
+│   │   ├── Dashboard.jsx       # Main dashboard UI (applications grid, filters, stats)
 │   │   └── Dashboard.css
 │   ├── components/
-│   │   ├── ApplicationCard/    # Individual job card with expandable interviews
-│   │   ├── WeeklyGoalBar/      # Weekly application goal tracker
-│   │   └── modals/             # Auth modal, Profile modal
+│   │   ├── ApplicationCard/    # Individual job card (expandable, edit/delete)
+│   │   │   ├── ApplicationCard.jsx
+│   │   │   └── ApplicationCard.css
+│   │   ├── WeeklyGoalBar/      # WeeklyGoalBar component
+│   │   │   ├── WeeklyGoalBar.jsx
+│   │   │   └── WeeklyGoalBar.css
+│   │   └── modals/             # AuthModal, ProfileModal, shared modal styles
+│   │       ├── AuthModal.jsx
+│   │       ├── ProfileModal.jsx
+│   │       └── Modal.css
 │   └── services/
-│       └── api.js              # Axios/fetch API calls to backend
+│       └── api.js              # Frontend API helpers(applicationsAP authAPI)
 │
 ├── server/                     # Node/Express backend
 │   ├── server.js               # Express app entry point
-│   ├── package.json
-│   ├── .env.example
+│   ├── package.json            # Server scripts & deps
+│   ├── .env.example            # Example env vars
 │   ├── config/
-│   │   └── database.js         # PostgreSQL connection
+│   │   └── database.js         # PostgreSQL connection (pool)
 │   ├── database/
-│   │   └── schema.sql          # DB schema definitions
+│   │   └── schema.sql          # SQL schema / table definitions
+│   ├── jobs/
+│   │   └── reminderJob.js      # Scheduled job to send interview reminders
+│   ├── services/
+│   │   └── emailService.js     # Email sending helpers used by jobs/routes
 │   ├── routes/
-│   │   ├── applications.js     # CRUD routes for applications
-│   │   └── authRoutes.js       # Register / login / delete account
+│   │   ├── applications.js     # CRUD API for applications
+│   │   └── authRoutes.js       # Register / login / profile / delete account
 │   └── middleware/
-│       ├── authenticateToken.js  # JWT verification
-│       └── validateIdParam.js    # Route param validation
+│       ├── authenticateToken.js# JWT authentication middleware
+│       └── validateIdParam.js  # ID param validation middleware
 │
 └── docs/
-    └── PROJECT-STRUCTURE.md
-```
-
+    └── PROJECT-STRUCTURE.md   # (this file)
 ```

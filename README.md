@@ -8,7 +8,7 @@ now ?
 A full-stack web app to track your job search from first apply to final offer. Log applications, monitor statuses, manage interviews, and stay on top of your weekly goals, all in one place.
 
 
--------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 ## Features
 
@@ -28,7 +28,9 @@ A full-stack web app to track your job search from first apply to final offer. L
 
 ### Interviews
 - Expandable interview button to view upcoming interviews at a glance with date and time details
+- When changing status to "Interview", the edit modal prompts for an optional interview date/time (optional)
 - After an interview date passes, a prompt appears on the card to mark the outcome as Offer or Rejected
+- Server-side scheduled job that emails interview reminders (runs daily at 8:00 AM, sends reminders 7 and 2 days before interviews)
 
 ### Dashboard & Stats
 - Overview of your full application pipeline
@@ -40,27 +42,36 @@ A full-stack web app to track your job search from first apply to final offer. L
 - Search by company name or role
 
 
+### UX & Interactions
+- **Click-to-copy fields** — click company or role on a card to copy it to clipboard with instant "Copied" feedback
+- **Keyboard shortcut** — press `N` to open the Add Application modal (disabled while typing in inputs)
+- **Confirmation safety for delete actions** — delete application has a confirmation dialog, delete account requires typing `DELETE` and entering your password
+
+### Profile
+- Change password, edit profile info, and delete account from the Profile modal
+
+### Resume Storage *(coming)*
+- Store application-tailored resumes per application card  (not functional yet)
+
+
 -------------------------------------------------------------------------------------------------
 
-## Planned upcoming Features
-
--  **Deadline reminders** via email (Twilio)
--  **Resume storage per application** (DigitalOcean Spaces)
--  **Custom domain** (Namecheap)
--  **Cloud deployment** (DigitalOcean)
-
-
--------------------------------------------------------------------------------------------------
 
 ## Tech Stack
 
+#-----------------------------#
 | Layer    | Technology       |
 |----------|------------------|
 | Frontend | React, Vite      |
+|----------|------------------|
 | Backend  | Node.js, Express |
+|----------|------------------|
 | Database | PostgreSQL       |
+|----------|------------------|
 | Auth     | JWT              |
+|----------|------------------|
 | Styling  | CSS Modules      |
+#-----------------------------#
 
 
 -------------------------------------------------------------------------------------------------
