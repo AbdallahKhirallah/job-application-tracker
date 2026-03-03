@@ -53,9 +53,13 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const [filterDateFrom, setFilterDateFrom] = useState("");
 
   // Fetching applications when user logs in
-  useEffect(() => {
+useEffect(() => {
     if (isLoggedIn) {
       fetchApplications();
+    } else {
+      setFilterSearch("");
+      setFilterStatuses([]);
+      setFilterDateFrom("");
     }
   }, [isLoggedIn]);
 

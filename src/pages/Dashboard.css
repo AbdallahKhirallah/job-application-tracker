@@ -3,37 +3,72 @@
    =================================== */
 
 .dashboard-logged-out {
-  position: fixed;
+  /* keep a flexible page container that grows with content
+     - allow vertical scrolling when content exceeds the viewport
+     - prevent any horizontal scrolling */
+  position: relative;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  height: auto;               /* allow the container to grow with content */
+  min-height: 100vh;         /* ensure it fills the viewport when content is short */
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow-x: hidden;        /* never allow horizontal scroll */
+  overflow-y: auto;          /* allow vertical scrolling when needed */
 }
 
 /* Animated gradient background */
 .dashboard-background {
-  position: absolute;
-  top: -50%;
+  /* Use a fixed container but render the visible gradients in a blurred
+     ::before pseudo-element. The pseudo-element uses gradual stops and a
+     large blur so edges fade smoothly into transparent. Animation is
+     applied to the pseudo-element to avoid visible rectangle motion. */
+  position: fixed;
+  top: 0;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 30% 50%, rgba(179, 140, 164, 0.15) 0%, transparent 50%), 
-              radial-gradient(circle at 70% 50%, rgba(139, 131, 120, 0.1) 0%, transparent 50%);
-  animation: gradientFloat 20s ease-in-out infinite;
+  z-index: 0;
+  background: none;           /* visual content comes from ::before */
   pointer-events: none;
+  overflow: hidden;
+}
+
+.dashboard-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Two soft radial gradients with multiple stops to fade smoothly to transparent */
+  background:
+    radial-gradient(circle at 30% 50%, rgba(179,140,164,0.18) 0%, rgba(179,140,164,0.08) 20%, rgba(179,140,164,0.03) 45%, transparent 100%),
+    radial-gradient(circle at 70% 50%, rgba(139,131,120,0.12) 0%, rgba(139,131,120,0.05) 25%, rgba(139,131,120,0.02) 55%, transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 120% 120%, 110% 110%;
+  filter: blur(36px);
+  opacity: 0.95;
+  transform-origin: center;
+  will-change: transform, opacity;
+  pointer-events: none;
+  mix-blend-mode: screen; /* helps the glow blend into the dark bg */
+  animation: gradientFloat 26s ease-in-out infinite;
 }
 
 /* Floating elements container */
 .floating-elements {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  /* Place decorative orbs in a fixed layer so they remain visually
+     inside the viewport and won't push or clip page content. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
 }
+
 
 .floating-orb-1 {
   position: absolute;
