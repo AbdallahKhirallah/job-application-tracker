@@ -17,6 +17,7 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -91,8 +92,13 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
       setIsDeleting(true);
       await authAPI.deleteAccount(deletePassword);
 
-      // After account deletion ,reload page to show logged out state
-      window.location.reload();
+      // Show a brief confirmation overlay, then redirect to landing page
+      setDeleteSuccess(true);
+      setIsDeleting(false);
+      setTimeout(() => {
+        // redirect to landing (logged-out) page after brief pause
+        window.location.href = "/";
+      }, 2200);
     } catch (error) {
       setDeleteError(error.message);
       setIsDeleting(false);
@@ -319,7 +325,16 @@ export default function ProfileModal({ isOpen, user, onClose, onSave }) {
           </div>
         )}
       </div>
+
+      {/* Success confirmation overlay shown after account is deleted */}
+      {deleteSuccess && (
+        <div className="confirm-overlay" aria-live="polite">
+          <div className="confirm-dialog" role="status" aria-label="Account deleted">
+            <h3>Your account has been deleted</h3>
+            <p>We hope to see you again.</p>
+          </div>
+        </div>
+      )}
     </div>
-    
   );
 }

@@ -10,21 +10,18 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: auto;               /* allow the container to grow with content */
-  min-height: 100vh;         /* ensure it fills the viewport when content is short */
+  height: auto;               
+  min-height: 100vh;       
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow-x: hidden;        /* never allow horizontal scroll */
+  overflow-x: hidden;       
   overflow-y: auto;          /* allow vertical scrolling when needed */
 }
 
 /* Animated gradient background */
 .dashboard-background {
-  /* Use a fixed container but render the visible gradients in a blurred
-     ::before pseudo-element. The pseudo-element uses gradual stops and a
-     large blur so edges fade smoothly into transparent. Animation is
-     applied to the pseudo-element to avoid visible rectangle motion. */
+
   position: fixed;
   top: 0;
   left: -50%;
@@ -40,7 +37,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  /* Two soft radial gradients with multiple stops to fade smoothly to transparent */
+
   background:
     radial-gradient(circle at 30% 50%, rgba(179,140,164,0.18) 0%, rgba(179,140,164,0.08) 20%, rgba(179,140,164,0.03) 45%, transparent 100%),
     radial-gradient(circle at 70% 50%, rgba(139,131,120,0.12) 0%, rgba(139,131,120,0.05) 25%, rgba(139,131,120,0.02) 55%, transparent 100%);
@@ -57,8 +54,7 @@
 
 /* Floating elements container */
 .floating-elements {
-  /* Place decorative orbs in a fixed layer so they remain visually
-     inside the viewport and won't push or clip page content. */
+
   position: fixed;
   top: 0;
   left: 0;
