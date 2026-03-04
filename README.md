@@ -7,6 +7,7 @@ now ?
 
 A full-stack web app to track your job search from first apply to final offer. Log applications, monitor statuses, manage interviews, and stay on top of your weekly goals, all in one place.
 
+🌐 Live at trackjat.me
 
 ------------------------------------------------------------------------------
 
@@ -46,12 +47,14 @@ A full-stack web app to track your job search from first apply to final offer. L
 - **Click-to-copy fields** — click company or role on a card to copy it to clipboard with instant "Copied" feedback
 - **Keyboard shortcut** — press `N` to open the Add Application modal (disabled while typing in inputs)
 - **Confirmation safety for delete actions** — delete application has a confirmation dialog, delete account requires typing `DELETE` and entering your password
+- **Account deletion confirmation** — brief confirmation message shown before redirecting to landing page
 
 ### Profile
 - Change password, edit profile info, and delete account from the Profile modal
 
-### Resume Storage *(coming)*
-- Store application-tailored resumes per application card  (not functional yet)
+### Resume Storage 
+- Upload a tailored PDF resume per application card (stored on DigitalOcean Spaces)
+- View or remove the uploaded resume directly from the card after uploading
 
 
 -------------------------------------------------------------------------------------------------
@@ -59,19 +62,25 @@ A full-stack web app to track your job search from first apply to final offer. L
 
 ## Tech Stack
 
-#-----------------------------#
-| Layer    | Technology       |
-|----------|------------------|
-| Frontend | React, Vite      |
-|----------|------------------|
-| Backend  | Node.js, Express |
-|----------|------------------|
-| Database | PostgreSQL       |
-|----------|------------------|
-| Auth     | JWT              |
-|----------|------------------|
-| Styling  | CSS Modules      |
-#-----------------------------#
+#---------------------------------------------#
+| Layer        | Technology                   |
+|--------------|------------------------------|
+| Frontend     | React, Vite                  |
+|--------------|------------------------------|
+| Backend      | Node.js, Express             |
+|--------------|------------------------------|
+| Database     | PostgreSQL                   |
+|--------------|------------------------------|
+| Auth         | JWT                          |
+|--------------|------------------------------|
+| Styling      | CSS Modules                  |
+|--------------|------------------------------|
+| File Storage | DigitalOcean Spaces (S3)     |
+|--------------|------------------------------|
+| Email        |   SendGrid                   |
+|--------------|------------------------------|
+| Deployment   | DigitalOcean (Droplet + PM2) |
+#---------------------------------------------#
 
 
 -------------------------------------------------------------------------------------------------
@@ -127,7 +136,15 @@ DB_NAME=jat
 DB_USER=youruser
 DB_PASSWORD=yourpassword
 JWT_SECRET=your_jwt_secret
-PORT=3000
+PORT=5001
+FRONTEND_URL=http://localhost:5173
+NODE_ENV=development
+SENDGRID_API_KEY=your_sendgrid_api_key
+SENDGRID_FROM_EMAIL=noreply@yourdomain.com
+DO_SPACES_KEY=your_spaces_access_key
+DO_SPACES_SECRET=your_spaces_secret_key
+DO_SPACES_REGION=your_region
+DO_SPACES_BUCKET=your_bucket_name
 ```
 
 -------------------------------------------------------------------------------------------------

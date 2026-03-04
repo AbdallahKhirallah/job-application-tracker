@@ -4,60 +4,67 @@ This file documents the current repository layout and the purpose of key files a
 
 ```
 job-application-tracker/
-├── README.md                   # Project README 
-├── index.html                  # Vite HTML entry
-├── package.json                # Frontend scripts & deps
-├── vite.config.js              # Vite config
-├── eslint.config.js            # ESLint configuration
+├── README.md                         # Project README
+├── index.html                        # Vite HTML entry
+├── package.json                      # Frontend scripts & deps
+├── package-lock.json
+├── vite.config.js                    # Vite config
+├── eslint.config.js                  # ESLint configuration
+├── .gitignore
+├── .env.local                        # Local dev env overrides (not committed)
 ├── public/
-│   |── jat.svg                 # App icon/ public assets
-│   └── jat-logo.png            # Logo
+│   ├── jat.svg                       # App icon
+│   └── jat-logo.png                  # Logo
 │
-├── src/                        # React frontend
-│   ├── main.jsx                # React entry (mounts App)
-│   ├── App.jsx                 # Root app wiring (auth/profile modals)
-│   ├── index.css               # Global CSS variables & styles
+├── src/                              # React frontend
+│   ├── main.jsx                      # React entry (mounts App)
+│   ├── App.jsx                       # Root app wiring (auth/profile modals)
+│   ├── index.css                     # Global CSS variables & styles
 │   ├── styles/
-│   │   └── buttons.css         # Shared button styles
+│   │   └── buttons.css               # Shared button styles
 │   ├── layout/
-│   │   ├── Navbar.jsx          # Top navigation
+│   │   ├── Navbar.jsx                # Top navigation
 │   │   └── Navbar.css
 │   ├── pages/
-│   │   ├── Dashboard.jsx       # Main dashboard UI (applications grid, filters, stats)
+│   │   ├── Dashboard.jsx             # Main dashboard UI (applications grid, filters, stats)
 │   │   └── Dashboard.css
 │   ├── components/
-│   │   ├── ApplicationCard/    # Individual job card (expandable, edit/delete)
+│   │   ├── ApplicationCard/          # Individual job card (expandable, edit/delete/resume)
 │   │   │   ├── ApplicationCard.jsx
 │   │   │   └── ApplicationCard.css
-│   │   ├── WeeklyGoalBar/      # WeeklyGoalBar component
+│   │   ├── WeeklyGoalBar/            # Weekly goal progress bar
 │   │   │   ├── WeeklyGoalBar.jsx
 │   │   │   └── WeeklyGoalBar.css
-│   │   └── modals/             # AuthModal, ProfileModal, shared modal styles
+│   │   └── modals/                   # Auth, Profile modals
 │   │       ├── AuthModal.jsx
 │   │       ├── ProfileModal.jsx
 │   │       └── Modal.css
 │   └── services/
-│       └── api.js              # Frontend API helpers(applicationsAP authAPI)
+│       └── api.js                    # Frontend API helpers (authAPI, applicationsAPI, resumeAPI)
 │
-├── server/                     # Node/Express backend
-│   ├── server.js               # Express app entry point
-│   ├── package.json            # Server scripts & deps
-│   ├── .env.example            # Example env vars
+├── server/                           # Node/Express backend
+│   ├── server.js                     # Express app entry point
+│   ├── package.json                  # Server scripts & deps
+│   ├── package-lock.json
+│   ├── .env                          # Server env vars (not committed)
+│   ├── .env.example                  # Example env vars template
 │   ├── config/
-│   │   └── database.js         # PostgreSQL connection (pool)
+│   │   └── database.js               # PostgreSQL connection (pool)
 │   ├── database/
-│   │   └── schema.sql          # SQL schema / table definitions
+│   │   └── schema.sql                # SQL schema / table definitions
 │   ├── jobs/
-│   │   └── reminderJob.js      # Scheduled job to send interview reminders
+│   │   └── reminderJob.js            # Scheduled job — sends interview reminder emails
 │   ├── services/
-│   │   └── emailService.js     # Email sending helpers used by jobs/routes
+│   │   ├── emailService.js           # Email sending helpers (SendGrid)
+│   │   └── storageService.js         # DigitalOcean Spaces upload/delete helpers
 │   ├── routes/
-│   │   ├── applications.js     # CRUD API for applications
-│   │   └── authRoutes.js       # Register / login / profile / delete account
+│   │   ├── applications.js           # CRUD API for job applications
+│   │   ├── authRoutes.js             # Register / login / profile / delete account
+│   │   └── resumes.js                # Resume upload and delete endpoints
 │   └── middleware/
-│       ├── authenticateToken.js# JWT authentication middleware
-│       └── validateIdParam.js  # ID param validation middleware
+│       ├── authenticateToken.js      # JWT authentication middleware
+│       └── validateIdParam.js        # ID param validation middleware
 │
 └── docs/
-    └── PROJECT-STRUCTURE.md   # (this file)
+    └── PROJECT-STRUCTURE.md          # (this file)
 ```
