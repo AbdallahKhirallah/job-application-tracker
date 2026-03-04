@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import ApplicationCard from "../components/ApplicationCard/ApplicationCard";
 import "./Dashboard.css";
-import { applicationsAPI } from "../services/api";
 import WeeklyGoalBar from "../components/WeeklyGoalBar/WeeklyGoalBar";
+import { applicationsAPI, resumeAPI } from "../services/api";
 
 // Filtering statuses
 const STATUS_OPTIONS = ["applied", "interview", "offer", "rejected"];
@@ -53,7 +53,7 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const [filterDateFrom, setFilterDateFrom] = useState("");
 
   // Fetching applications when user logs in
-useEffect(() => {
+  useEffect(() => {
     if (isLoggedIn) {
       fetchApplications();
     } else {
@@ -78,21 +78,20 @@ useEffect(() => {
     }
   }
 
-//Keyboard shortcut : press "N" to open Add Application modal,
-// Disabled when user is typing in a field or modal is already open
+  //Keyboard shortcut : press "N" to open Add Application modal,
+  // Disabled when user is typing in a field or modal is already open
   useEffect(() => {
-  function handleKeyDown(e) {
-    if (e.key === 'n' || e.key === 'N') {
-      const tag = document.activeElement.tagName;
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
-      if (isCreateOpen) return;
-      setIsCreateOpen(true);
+    function handleKeyDown(e) {
+      if (e.key === "n" || e.key === "N") {
+        const tag = document.activeElement.tagName;
+        if (["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
+        if (isCreateOpen) return;
+        setIsCreateOpen(true);
+      }
     }
-  }
-  document.addEventListener('keydown', handleKeyDown);
-  return () => document.removeEventListener('keydown', handleKeyDown);
-}, [isCreateOpen]);
-
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isCreateOpen]);
 
   // ── Filtered applications (derived) ───────────
   const filteredApplications = useMemo(() => {
@@ -123,21 +122,22 @@ useEffect(() => {
     });
   }, [applications, filterSearch, filterStatuses, filterDateFrom]);
 
+  // Status counts + response rate for the stats strip
+  const statusCounts = useMemo(() => {
+    const applied = applications.filter((a) => a.status === "applied").length;
+    const interview = applications.filter(
+      (a) => a.status === "interview",
+    ).length;
+    const offer = applications.filter((a) => a.status === "offer").length;
+    const rejected = applications.filter((a) => a.status === "rejected").length;
+    const total = applied + interview + offer + rejected;
 
+    //Interviews + offers out of total =response rate
+    const responseRate =
+      total > 0 ? Math.round(((interview + offer) / total) * 100) : 0;
 
-// Status counts + response rate for the stats strip
-const statusCounts = useMemo(() => {
-  const applied   = applications.filter(a => a.status === "applied").length;
-  const interview = applications.filter(a => a.status === "interview").length;
-  const offer     = applications.filter(a => a.status === "offer").length;
-  const rejected  = applications.filter(a => a.status === "rejected").length;
-  const total     = applied + interview + offer + rejected;
-
-  //Interviews + offers out of total =response rate
-  const responseRate = total > 0 ? Math.round((interview + offer) / total * 100) : 0;
-
-  return { applied, interview, offer, rejected, responseRate };
-}, [applications]);
+    return { applied, interview, offer, rejected, responseRate };
+  }, [applications]);
 
   const activeFilterCount =
     (filterSearch.trim() ? 1 : 0) +
@@ -285,7 +285,7 @@ const statusCounts = useMemo(() => {
     try {
       const newApplication = await applicationsAPI.create(data);
       setApplications((prev) => [newApplication, ...prev]);
-      setIsCreateOpen(false); 
+      setIsCreateOpen(false);
       setCreateFormData({
         company: "",
         role: "",
@@ -343,6 +343,30 @@ const statusCounts = useMemo(() => {
     } catch (err) {
       console.error("Error updating application:", err);
       alert(err.message || "Failed to update application");
+    }
+  }
+
+  async function handleUploadResume(id, file) {
+    try {
+      const data = await resumeAPI.upload(id, file);
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.id === id ? { ...app, resume_url: data.resume_url } : app,
+        ),
+      );
+    } catch (err) {
+      alert(err.message || "Failed to upload resume");
+    }
+  }
+
+  async function handleDeleteResume(id) {
+    try {
+      await resumeAPI.delete(id);
+      setApplications((prev) =>
+        prev.map((app) => (app.id === id ? { ...app, resume_url: null } : app)),
+      );
+    } catch (err) {
+      alert(err.message || "Failed to delete resume");
     }
   }
 
@@ -455,35 +479,46 @@ const statusCounts = useMemo(() => {
         <h1 className="dashboard-title">Applications</h1>
         <p className="dashboard-subtitle">Your job search, all in one place.</p>
         <div className="dashboard-stats-strip">
-
           {/* Weekly Goal Bar */}
-<WeeklyGoalBar applications={applications} />
+          <WeeklyGoalBar applications={applications} />
 
-  <div className="ghost-stat">
-    <span className="ghost-stat-num">{statusCounts.applied || '—'}</span>
-    <span className="ghost-stat-label">Applied</span>
-  </div>
-  <div className="ghost-stat-divider" />
-  <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--interview">{statusCounts.interview || '—'}</span>
-    <span className="ghost-stat-label">Interviews</span>
-  </div>
-  <div className="ghost-stat-divider" />
-  <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--offer">{statusCounts.offer || '—'}</span>
-    <span className="ghost-stat-label">Offers</span>
-  </div>
-  <div className="ghost-stat-divider" />
-  <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--rejected">{statusCounts.rejected || '—'}</span>
-    <span className="ghost-stat-label">Rejected</span>
-  </div>
-  <div className="ghost-stat-divider" />
-  <div className="ghost-stat">
-    <span className="ghost-stat-num ghost-stat-num--rate">{statusCounts.responseRate ? `${statusCounts.responseRate}%` : '—'}</span>
-    <span className="ghost-stat-label">Response</span>
-  </div>
-</div>
+          <div className="ghost-stat">
+            <span className="ghost-stat-num">
+              {statusCounts.applied || "—"}
+            </span>
+            <span className="ghost-stat-label">Applied</span>
+          </div>
+          <div className="ghost-stat-divider" />
+          <div className="ghost-stat">
+            <span className="ghost-stat-num ghost-stat-num--interview">
+              {statusCounts.interview || "—"}
+            </span>
+            <span className="ghost-stat-label">Interviews</span>
+          </div>
+          <div className="ghost-stat-divider" />
+          <div className="ghost-stat">
+            <span className="ghost-stat-num ghost-stat-num--offer">
+              {statusCounts.offer || "—"}
+            </span>
+            <span className="ghost-stat-label">Offers</span>
+          </div>
+          <div className="ghost-stat-divider" />
+          <div className="ghost-stat">
+            <span className="ghost-stat-num ghost-stat-num--rejected">
+              {statusCounts.rejected || "—"}
+            </span>
+            <span className="ghost-stat-label">Rejected</span>
+          </div>
+          <div className="ghost-stat-divider" />
+          <div className="ghost-stat">
+            <span className="ghost-stat-num ghost-stat-num--rate">
+              {statusCounts.responseRate
+                ? `${statusCounts.responseRate}%`
+                : "—"}
+            </span>
+            <span className="ghost-stat-label">Response</span>
+          </div>
+        </div>
         <div className="dashboard-header">
           <div className="dashboard-header-actions">
             {/* Upcoming Interviews Bean (only shows when there are upcoming interviews)*/}
@@ -567,7 +602,10 @@ const statusCounts = useMemo(() => {
               onMouseEnter={() => {
                 clearTimeout(filterLeaveTimeout.current);
                 clearTimeout(filterHoverTimeout.current);
-                filterHoverTimeout.current = setTimeout(() => setIsFilterOpen(true), 60);
+                filterHoverTimeout.current = setTimeout(
+                  () => setIsFilterOpen(true),
+                  60,
+                );
               }}
               onMouseLeave={() => {
                 clearTimeout(filterHoverTimeout.current);
@@ -627,7 +665,9 @@ const statusCounts = useMemo(() => {
                     type="text"
                     placeholder="Company or role…"
                     value={filterSearch}
-                    onChange={(e) => isFilterOpen && setFilterSearch(e.target.value)}
+                    onChange={(e) =>
+                      isFilterOpen && setFilterSearch(e.target.value)
+                    }
                     readOnly={!isFilterOpen}
                     tabIndex={isFilterOpen ? 0 : -1}
                     onFocus={() => {
@@ -679,7 +719,10 @@ const statusCounts = useMemo(() => {
                   onBlur={() => {
                     // when focus leaves the date input, allow collapse after short delay
                     filterFocusRef.current = false;
-                    filterLeaveTimeout.current = setTimeout(() => setIsFilterOpen(false), 300);
+                    filterLeaveTimeout.current = setTimeout(
+                      () => setIsFilterOpen(false),
+                      300,
+                    );
                   }}
                 />
 
@@ -788,6 +831,9 @@ const statusCounts = useMemo(() => {
                 notes={app.notes}
                 interviewDate={app.interview_date}
                 isExpanded={expandedId === app.id}
+                resumeUrl={app.resume_url}
+                onUploadResume={(file) => handleUploadResume(app.id, file)}
+                onDeleteResume={() => handleDeleteResume(app.id)}
                 onToggle={() =>
                   setExpandedId((prev) => (prev === app.id ? null : app.id))
                 }

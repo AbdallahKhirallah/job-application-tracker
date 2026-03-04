@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import "./ApplicationCard.css";
 
 export default function ApplicationCard({
+  id,
   company,
   role,
   status,
@@ -17,6 +18,8 @@ export default function ApplicationCard({
   onEdit,
   cardRef,
   style,
+  onUploadResume,
+  onDeleteResume,
 }) {
   // Formatting interview date for display  "Feb 20 at 2:00 PM"
   function formatInterviewDate(dateStr) {
@@ -310,10 +313,11 @@ export default function ApplicationCard({
             </div>
 
 
-            {/* Resume section */}
-            <div className="detail-resume">
-              <span className="detail-label">Resume / CV</span>
-              {resumeUrl ? (
+{/* Resume section */}
+          <div className="detail-resume">
+            <span className="detail-label">Resume / CV</span>
+            {resumeUrl ? (
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <a
                   href={resumeUrl}
                   target="_blank"
@@ -322,15 +326,33 @@ export default function ApplicationCard({
                 >
                   📄 View Resume
                 </a>
-              ) : (
-                <span
-                  className="resume-upload-disabled"
-                  title="Resume upload coming soon — requires cloud storage setup"
-                >
-                  📎 Upload CV <span className="coming-soon-tag">Coming</span>
-                </span>
-              )}
-            </div>
+                {typeof onDeleteResume === "function" && (
+                  <button
+                    className="resume-delete-btn"
+                    onClick={() => onDeleteResume()}
+                    type="button"
+                  >
+                    🗑 Remove
+                  </button>
+                )}
+              </div>
+            ) : (
+              <label className="resume-upload-label">
+                📎 Upload CV
+                <input
+                  type="file"
+                  accept=".pdf"
+                  style={{ display: "none" }}
+                  onChange={(e) => {
+                    const f = e.target.files && e.target.files[0];
+                    if (f && typeof onUploadResume === "function") {
+                      onUploadResume(f);
+                    }
+                  }}
+                />
+              </label>
+            )}
+          </div>
           </div>
         )}
 

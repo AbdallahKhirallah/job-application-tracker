@@ -1316,3 +1316,41 @@ transition:
   margin: 4px 0 24px;
   padding: 0;
 }
+
+
+
+
+
+/* CV buttons */
+.resume-upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px dashed rgba(179, 140, 164, 0.3);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  width: fit-content;
+  transition: border-color 180ms ease, color 180ms ease;
+}
+
+.resume-upload-label:hover {
+  border-color: rgba(179, 140, 164, 0.6);
+  color: var(--text-primary);
+}
+
+.resume-delete-btn {
+  background: none;
+  border: none;
+  color: var(--status-rejected);
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 180ms ease;
+}
+
+.resume-delete-btn:hover {
+  opacity: 1;
+}

@@ -53,6 +53,7 @@ router.get('/', authenticateToken, async (req, res) => {
         source, 
         notes, 
         interview_date,
+        resume_url,
         created_at, 
         updated_at
       FROM applications 
@@ -136,6 +137,7 @@ router.get('/:id', validateIdParam, authenticateToken, async (req, res) => {
         source, 
         notes, 
         interview_date,
+        resume_url,
         created_at, 
         updated_at
       FROM applications 

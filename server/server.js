@@ -117,6 +117,9 @@ app.use('/api/auth', authRoutes);
 // Connecting  applications routes
 app.use('/api/applications', applicationsRoutes);
 
+const resumeRoutes = require('./routes/resumes');
+app.use('/api/resumes', resumeRoutes);
+
 // Routes :
 // - POST   /api/auth/register            - Register new user
 // - POST   /api/auth/login               - Login existing user
@@ -125,7 +128,8 @@ app.use('/api/applications', applicationsRoutes);
 // - POST   /api/applications             - Create new application
 // - PUT    /api/applications/:id         - Update an application
 // - DELETE /api/applications/:id         - Delete an application
-// - GET    /api/applications/stats/summary   - Get application statistics
+// - POST /api/resumes/:applicationId     — upload resume
+// - DELETE /api/resumes/:applicationId   — delete resume
 
 
 // ============================================

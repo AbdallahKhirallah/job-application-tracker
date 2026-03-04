@@ -347,3 +347,47 @@ export const goalAPI = {
     return data.weekly_goal;
   },
 };
+
+
+// ============================================
+//  RESUME API
+// ============================================
+
+export const resumeAPI = {
+
+  // upload resume for an application
+  upload: async (applicationId, file) => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    const response = await fetch(`${API_URL}/resumes/${applicationId}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Upload failed');
+    return data;
+  },
+
+
+  
+  // delete resume for an application
+  delete: async (applicationId) => {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/resumes/${applicationId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Delete failed');
+    return data;
+  },
+};
