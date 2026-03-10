@@ -66,5 +66,7 @@ job-application-tracker/
 │       └── validateIdParam.js        # ID param validation middleware
 │
 └── docs/
-    └── PROJECT-STRUCTURE.md          # (this file)
+    ├── PROJECT-STRUCTURE.md          # This file
+    └── assets/
+        └── screenshot.png            # App screenshot
 ```

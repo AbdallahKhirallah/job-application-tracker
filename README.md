@@ -9,6 +9,9 @@ A full-stack web app to track your job search from first apply to final offer. L
 
 🌐 Live at trackjat.me
 
+## Screenshot
+[JAT Screenshot](docs/assets/screenshot.png)
+
 ------------------------------------------------------------------------------
 
 ## Features
