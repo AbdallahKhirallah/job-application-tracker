@@ -45,19 +45,30 @@ export default function WeeklyGoalBar({ applications }) {
 
   async function handleGoalSave() {
     const parsed = parseInt(inputVal, 10);
-    if (isNaN(parsed) || parsed < 1 || parsed > 100) return;
+    if (isNaN(parsed) || parsed < 1 || parsed > 100) {
+      setInputVal(String(goal));
+      setIsEditing(false);
+      return;
+    }
+    const prevGoal = goal;
+    setGoal(parsed);
+    setIsEditing(false);
     try {
       const updated = await goalAPI.updateGoal(parsed);
       setGoal(updated);
     } catch (err) {
       console.error("Error saving goal:", err);
+      setGoal(prevGoal);
+      setInputVal(String(prevGoal));
     }
-    setIsEditing(false);
   }
 
   function handleKeyDown(e) {
     if (e.key === "Enter") handleGoalSave();
-    if (e.key === "Escape") setIsEditing(false);
+    if (e.key === "Escape") {
+      setInputVal(String(goal));
+      setIsEditing(false);
+    }
   }
 
   return (
