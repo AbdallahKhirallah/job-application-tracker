@@ -9,6 +9,7 @@ async function sendInterviewReminder(toEmail, userName, company, role, interview
   
   // Format the raw date ("2025-03-10") to "Monday, March 10, 2025"
   const formattedDate = new Date(interviewDate).toLocaleDateString('en-US', {
+    timeZone: 'UTC',
     weekday: 'long',
     year: 'numeric',
     month: 'long',

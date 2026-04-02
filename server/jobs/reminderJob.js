@@ -20,7 +20,7 @@ async function checkAndSendReminders() {
         a.interview_date,
         u.name AS user_name,
         u.email AS user_email,
-        EXTRACT(DAY FROM (a.interview_date - CURRENT_DATE))::integer AS days_until
+        (a.interview_date::date - CURRENT_DATE::date) AS days_until
       FROM applications a
       JOIN users u ON a.user_id = u.id
       WHERE 
