@@ -2,20 +2,22 @@
   BUTTON STYLES
    ========================== */
 
-/* Dashboard Login button  */
+/* Primary action button */
 .btn-primary {
-  background-color: var(--bg-elevated);
+  background: linear-gradient(135deg, rgba(179, 140, 164, 0.22) 0%, rgba(139, 131, 120, 0.18) 100%);
   color: var(--text-primary);
-  border: none;
+  border: 1px solid rgba(179, 140, 164, 0.22);
   border-radius: var(--radius-md);
   padding: 12px 20px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary:hover {
-  background-color: var(--bg-surface);
+  background: linear-gradient(135deg, rgba(179, 140, 164, 0.38) 0%, rgba(139, 131, 120, 0.3) 100%);
+  border-color: rgba(179, 140, 164, 0.4);
   transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(179, 140, 164, 0.15);
 }
 
 /* Dashboard Register button  */

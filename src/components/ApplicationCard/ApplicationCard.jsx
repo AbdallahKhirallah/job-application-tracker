@@ -12,6 +12,9 @@ export default function ApplicationCard({
   notes,
   interviewDate,
   resumeUrl,
+  contactName,
+  contactEmail,
+  contactLinkedin,
   isExpanded,
   onToggle,
   onDelete,
@@ -65,6 +68,9 @@ export default function ApplicationCard({
     source: "",
     notes: "",
     interviewDate: "",
+    contactName: "",
+    contactEmail: "",
+    contactLinkedin: "",
   });
   const [isInterviewPopupOpen, setIsInterviewPopupOpen] = useState(false);
   const [interviewForm, setInterviewForm] = useState({ date: "", time: "" });
@@ -98,6 +104,9 @@ export default function ApplicationCard({
         source,
         notes,
         interviewDate: interviewDate || "",
+        contactName: contactName || "",
+        contactEmail: contactEmail || "",
+        contactLinkedin: contactLinkedin || "",
       });
     }
   }, [isEditOpen, company, role, status, location, appliedAt, source, notes]);
@@ -123,10 +132,16 @@ export default function ApplicationCard({
     const dataToSave = {
       ...formData,
       applied_at: formData.appliedAt,
+      contact_name: formData.contactName,
+      contact_email: formData.contactEmail,
+      contact_linkedin: formData.contactLinkedin,
     };
 
     delete dataToSave.appliedAt;
     delete dataToSave.interviewDate;
+    delete dataToSave.contactName;
+    delete dataToSave.contactEmail;
+    delete dataToSave.contactLinkedin;
 
     //if status is being changed to interview, show the date popup first
     if (formData.status === "interview") {
@@ -189,7 +204,7 @@ export default function ApplicationCard({
 
   return (
     <>
-      <article ref={cardRef} className="app-card" style={style}>
+      <article ref={cardRef} className={`app-card app-card-${status}`} style={style}>
         <header className="app-card-header">
           <h2
             className="app-card-company"
@@ -312,6 +327,30 @@ export default function ApplicationCard({
               </p>
             </div>
 
+
+{/* Contact section */}
+          <div className="detail-contact">
+            <span className="detail-label">Contact</span>
+            {contactName || contactEmail || contactLinkedin ? (
+              <div className="contact-info">
+                {contactName && (
+                  <span className="contact-name">{contactName}</span>
+                )}
+                {contactEmail && (
+                  <a href={`mailto:${contactEmail}`} className="contact-link contact-email">
+                    ✉ {contactEmail}
+                  </a>
+                )}
+                {contactLinkedin && (
+                  <a href={contactLinkedin} target="_blank" rel="noopener noreferrer" className="contact-link contact-linkedin">
+                    in {contactLinkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, "").replace(/\/$/, "")}
+                  </a>
+                )}
+              </div>
+            ) : (
+              <p className="notes-empty">No contact added</p>
+            )}
+          </div>
 
 {/* Resume section */}
           <div className="detail-resume">
@@ -454,6 +493,39 @@ export default function ApplicationCard({
                   value={formData.notes}
                   onChange={handleChange}
                   rows="3"
+                />
+              </div>
+
+              <div className="auth-field">
+                <label>Contact Name</label>
+                <input
+                  name="contactName"
+                  value={formData.contactName}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="e.g., Sarah Johnson"
+                />
+              </div>
+
+              <div className="auth-field">
+                <label>Contact Email</label>
+                <input
+                  name="contactEmail"
+                  value={formData.contactEmail}
+                  onChange={handleChange}
+                  type="email"
+                  placeholder="e.g., sarah@company.com"
+                />
+              </div>
+
+              <div className="auth-field">
+                <label>Contact LinkedIn</label>
+                <input
+                  name="contactLinkedin"
+                  value={formData.contactLinkedin}
+                  onChange={handleChange}
+                  type="url"
+                  placeholder="e.g., linkedin.com/in/sarahjohnson"
                 />
               </div>
             </div>

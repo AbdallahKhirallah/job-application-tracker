@@ -152,8 +152,13 @@
 }
 
 .dashboard-title {
-  margin-bottom: 0; 
+  margin-bottom: 0;
   padding-right: 14px;  /*to keep the expanded filter bar from touching title */
+  background: linear-gradient(135deg, #E6E6EB 0%, #B38CA4 60%, #8B8378 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
 }
 
 .filter-date-input {
@@ -209,30 +214,16 @@
   font-weight: 600;
 }
 
-/* CTA Buttons */
-.btn-primary {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #B38CA4 0%, #8B8378 100%) !important;
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 20px 40px rgba(179, 140, 164, 0.3), 0 0 20px rgba(179, 140, 164, 0.2) !important;
-}
-
-.btn-primary:not(:hover) {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
+/* CTA Buttons (landing page overrides for larger sizing) */
 .btn-secondary {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-secondary:hover {
-  color: var(--text-primary) !important;
-  border-color: #B38CA4 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 10px 30px rgba(179, 140, 164, 0.2) !important;
+  color: var(--text-primary);
+  border-color: #B38CA4;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(179, 140, 164, 0.2);
 }
 
 .btn-secondary:not(:hover) {
@@ -1315,6 +1306,38 @@ transition:
   color: var(--text-secondary);
   margin: 4px 0 24px;
   padding: 0;
+}
+
+/* Subtle ambient glow on the logged-in dashboard */
+.dashboard:not(.dashboard-logged-out)::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -10%;
+  width: 55%;
+  height: 60%;
+  background: radial-gradient(ellipse, rgba(179, 140, 164, 0.055) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(60px);
+}
+
+.dashboard:not(.dashboard-logged-out)::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  right: -5%;
+  width: 45%;
+  height: 50%;
+  background: radial-gradient(ellipse, rgba(139, 131, 120, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+}
+
+.dashboard-container {
+  position: relative;
+  z-index: 1;
 }
 
 

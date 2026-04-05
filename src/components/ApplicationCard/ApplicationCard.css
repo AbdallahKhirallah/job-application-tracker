@@ -2,6 +2,12 @@
    APPLICATION CARD
    ========================= */
 
+/* Status top border per card */
+.app-card-applied   { border-top: 2px solid var(--status-applied); }
+.app-card-interview { border-top: 2px solid var(--status-interview); }
+.app-card-offer     { border-top: 2px solid var(--status-offer); }
+.app-card-rejected  { border-top: 2px solid var(--status-rejected); }
+
 .app-card {
   background-color: var(--bg-surface);
   border-radius: var(--radius-md);
@@ -330,6 +336,68 @@
   }
 }
 
+
+/* ==================================
+      CONTACT SECTION
+   =================================== */
+
+.detail-contact {
+  font-size: 0.8rem;
+  padding-top: 12px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(139, 131, 120, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.contact-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 500;
+  width: fit-content;
+  transition: all 200ms ease;
+}
+
+.contact-email {
+  background: rgba(196, 162, 90, 0.1);
+  border: 1px solid rgba(196, 162, 90, 0.25);
+  color: var(--status-interview);
+}
+
+.contact-email:hover {
+  background: rgba(196, 162, 90, 0.2);
+  border-color: rgba(196, 162, 90, 0.45);
+  transform: translateY(-1px);
+}
+
+.contact-linkedin {
+  background: rgba(111, 175, 138, 0.1);
+  border: 1px solid rgba(111, 175, 138, 0.25);
+  color: var(--status-offer);
+}
+
+.contact-linkedin:hover {
+  background: rgba(111, 175, 138, 0.2);
+  border-color: rgba(111, 175, 138, 0.45);
+  transform: translateY(-1px);
+}
 
 /* ==================================
       RESUME  SECTION
