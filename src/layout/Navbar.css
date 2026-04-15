@@ -314,3 +314,42 @@
     transform: scaleY(1);
   }
 }
+
+/* =========================
+   RESPONSIVE NAVBAR
+   ========================= */
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .navbar.expanded {
+    padding: 12px 20px;
+    border-radius: 28px;
+  }
+
+  .navbar-items {
+    gap: 14px;
+    margin-left: 8px;
+  }
+
+  .navbar-item {
+    font-size: 0.82rem;
+  }
+
+  .navbar-home {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .navbar-divider {
+    display: none;
+  }
+
+  .navbar-items {
+    gap: 10px;
+  }
+}

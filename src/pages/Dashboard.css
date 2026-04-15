@@ -1629,6 +1629,98 @@ transition:
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* =========================
+   RESPONSIVE DASHBOARD
+   ========================= */
+
+@media (max-width: 700px) {
+  /* Header actions: stack filter + add button */
+  .dashboard-header-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Stats strip: allow horizontal scroll on mobile */
+  .dashboard-stats-strip {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-radius: var(--radius-md);
+    width: 100%;
+    padding: 7px 12px;
+    justify-content: flex-start;
+  }
+
+  .dashboard-stats-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ghost-stats-strip {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+  }
+
+  .ghost-stats-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Filter bar: limit open width to screen */
+  .filter-bar.open {
+    max-width: calc(100vw - 32px);
+  }
+
+  /* Interview bean: limit to screen width */
+  .interview-bean.open {
+    max-width: calc(100vw - 32px);
+    width: calc(100vw - 32px);
+  }
+
+  /* Weekly goal bar full width */
+  .weekly-goal-bar {
+    max-width: 100%;
+  }
+
+  /* Hero title size */
+  .hero-left .dashboard-title-gradient,
+  .hero-left .dashboard-title-shine {
+    font-size: 2.8rem;
+  }
+
+  .dashboard-cta {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .dashboard-cta button {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-layout {
+    padding: 32px 16px;
+    gap: 32px;
+  }
+
+  .hero-left .dashboard-title-gradient,
+  .hero-left .dashboard-title-shine {
+    font-size: 2.2rem;
+  }
+
+  .ghost-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-greeting-text {
+    font-size: 1.2rem;
+  }
+}
+
 /* Responsive — stack columns on smaller screens */
 @media (max-width: 860px) {
   .hero-layout {

@@ -42,6 +42,37 @@
   flex-direction: column;
 }
 
+@media (max-width: 700px) {
+  .confirm-overlay {
+    align-items: flex-end;
+    overflow-y: auto;
+  }
+
+  .confirm-dialog {
+    max-width: 100%;
+    width: 100%;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    margin: 0;
+  }
+
+  .edit-dialog {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 16px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .auth-modal {
+    width: 95vw;
+    max-width: 95vw;
+    padding: 22px 18px;
+  }
+}
+
 .confirm-dialog h3 {
   margin: 0 0 8px;
   font-size: 1.05rem;

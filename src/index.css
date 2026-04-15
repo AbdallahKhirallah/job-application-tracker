@@ -434,3 +434,48 @@ button:focus-visible {
   color: var(--text-secondary);
   font-weight: 400;
 }
+
+/* =========================
+   MOBILE RESPONSIVENESS
+   ========================= */
+
+@media (max-width: 700px) {
+  .app {
+    padding-top: 76px;
+  }
+
+  .dashboard-container {
+    padding: 0 14px;
+  }
+
+  /* Edit / create dialog — single column on mobile */
+  .edit-dialog .auth-form {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-dialog .auth-form .auth-field:has(textarea) {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-greeting-text {
+    font-size: 1.25rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+
+  .confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .confirm-actions .btn-primary,
+  .confirm-actions .btn-secondary,
+  .confirm-actions .btn-danger {
+    width: 100%;
+  }
+}
