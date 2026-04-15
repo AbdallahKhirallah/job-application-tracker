@@ -76,7 +76,7 @@ function App() {
         onLogout={handleLogout}
         onOpenProfile={openProfile}
       />
-      <Dashboard isLoggedIn={isLoggedIn} onOpenAuth={openAuth} />
+      <Dashboard isLoggedIn={isLoggedIn} onOpenAuth={openAuth} user={user} />
       <AuthModal
         isOpen={isAuthOpen}
         mode={authMode}

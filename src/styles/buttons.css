@@ -4,9 +4,9 @@
 
 /* Primary action button */
 .btn-primary {
-  background: linear-gradient(135deg, rgba(179, 140, 164, 0.22) 0%, rgba(139, 131, 120, 0.18) 100%);
+  background: linear-gradient(135deg, rgba(74, 93, 78, 0.28) 0%, rgba(74, 93, 78, 0.18) 100%);
   color: var(--text-primary);
-  border: 1px solid rgba(179, 140, 164, 0.22);
+  border: 1px solid rgba(74, 93, 78, 0.28);
   border-radius: var(--radius-md);
   padding: 12px 20px;
   cursor: pointer;
@@ -14,10 +14,10 @@
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, rgba(179, 140, 164, 0.38) 0%, rgba(139, 131, 120, 0.3) 100%);
-  border-color: rgba(179, 140, 164, 0.4);
+  background: linear-gradient(135deg, rgba(74, 93, 78, 0.45) 0%, rgba(74, 93, 78, 0.32) 100%);
+  border-color: rgba(74, 93, 78, 0.5);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(179, 140, 164, 0.15);
+  box-shadow: 0 6px 20px rgba(74, 93, 78, 0.18);
 }
 
 /* Dashboard Register button  */

@@ -130,9 +130,9 @@
 
 .btn-secondary:hover {
   color: var(--text-primary);
-  border-color: #B38CA4;
+  border-color: #4A5D4E;
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(179, 140, 164, 0.2);
+  box-shadow: 0 10px 30px rgba(74, 93, 78, 0.22);
 }
 
 .btn-secondary:not(:hover) {
@@ -1210,11 +1210,24 @@ transition:
   opacity: 0.6;
 }
 
-.dashboard-subtitle {
-  font-size: 0.9rem;
+.dashboard-greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+
+.dashboard-greeting-text {
+  font-size: 1.55rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-greeting-date {
+  font-size: 0.85rem;
   color: var(--text-secondary);
-  margin: 4px 0 24px;
-  padding: 0;
 }
 
 /* Subtle ambient glow on the logged-in dashboard */
@@ -1260,7 +1273,7 @@ transition:
   gap: 6px;
   padding: 6px 12px;
   border-radius: var(--radius-pill);
-  border: 1px dashed rgba(179, 140, 164, 0.3);
+  border: 1px dashed rgba(74, 93, 78, 0.32);
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.8rem;
@@ -1269,7 +1282,7 @@ transition:
 }
 
 .resume-upload-label:hover {
-  border-color: rgba(179, 140, 164, 0.6);
+  border-color: rgba(74, 93, 78, 0.58);
   color: var(--text-primary);
 }
 

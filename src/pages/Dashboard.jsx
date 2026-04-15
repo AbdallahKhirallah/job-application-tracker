@@ -9,7 +9,17 @@ import { applicationsAPI, resumeAPI } from "../services/api";
 // Filtering statuses
 const STATUS_OPTIONS = ["applied", "interview", "offer", "rejected"];
 
-export default function Dashboard({ isLoggedIn, onOpenAuth }) {
+function getGreeting(name) {
+  const hour = new Date().getHours()
+  const firstName = name ? name.split(" ")[0] : null
+  let period
+  if (hour < 12) period = "Good morning"
+  else if (hour < 17) period = "Good afternoon"
+  else period = "Good evening"
+  return firstName ? `${period}, ${firstName}` : period
+}
+
+export default function Dashboard({ isLoggedIn, onOpenAuth, user }) {
   // States for applications from database
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -492,8 +502,10 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
       <div className="dashboard-container">
         {/* Header with expanding filter bar */}
 
-        <h1 className="dashboard-title">Applications</h1>
-        <p className="dashboard-subtitle">Your job search, all in one place.</p>
+        <div className="dashboard-greeting">
+          <h1 className="dashboard-greeting-text">{getGreeting(user?.name)}</h1>
+          <span className="dashboard-greeting-date">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</span>
+        </div>
         <div className="dashboard-stats-strip">
           {/* Weekly Goal Bar */}
           <WeeklyGoalBar applications={applications} />
