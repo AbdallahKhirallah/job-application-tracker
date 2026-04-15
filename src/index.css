@@ -47,6 +47,7 @@ body {
   color: var(--text-primary);
   background-image: radial-gradient(circle, rgba(74, 93, 78, 0.07) 1px, transparent 1px);
   background-size: 28px 28px;
+  overflow-x: hidden;
 }
 
 a {
@@ -247,11 +248,30 @@ button:focus-visible {
   max-width: 320px;
   width: 100%;
   margin: auto;
-  transform: translateY(0%);  
+  transform: translateY(0%);
 
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.6),
     inset 0 0 0 1px rgba(232, 228, 223, 0.05);
+}
+
+.edit-dialog {
+  width: clamp(640px, 80vw, 1000px);
+  max-width: clamp(640px, 80vw, 1000px);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-dialog .auth-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+}
+
+/* notes textarea spans the full width */
+.edit-dialog .auth-form .auth-field:has(textarea) {
+  grid-column: 1 / -1;
 }
 
 .confirm-dialog h3 {
