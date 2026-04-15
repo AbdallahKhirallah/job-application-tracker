@@ -43,21 +43,24 @@ router.get('/', authenticateToken, async (req, res) => {
     // Query to the database for all applications belonging to the user
     //req.userId comes from the authenticateToken middleware
     const applications = await pool.query(
-      `SELECT 
-        id, 
-        company, 
-        role, 
-        status, 
-        location, 
-        applied_at, 
-        source, 
-        notes, 
+      `SELECT
+        id,
+        company,
+        role,
+        status,
+        location,
+        applied_at,
+        source,
+        notes,
         interview_date,
         resume_url,
-        created_at, 
+        contact_name,
+        contact_email,
+        contact_linkedin,
+        created_at,
         updated_at
-      FROM applications 
-      WHERE user_id = $1 
+      FROM applications
+      WHERE user_id = $1
       ORDER BY created_at DESC`, // Newest applications first
       [req.userId]
     );
@@ -127,20 +130,23 @@ router.get('/:id', validateIdParam, authenticateToken, async (req, res) => {
     // Query for the specific  application
     // We check BOTH the id AND user_id to ensure: The application exists and It belongs to the logged-in user
     const application = await pool.query(
-      `SELECT 
-        id, 
-        company, 
-        role, 
-        status, 
-        location, 
-        applied_at, 
-        source, 
-        notes, 
+      `SELECT
+        id,
+        company,
+        role,
+        status,
+        location,
+        applied_at,
+        source,
+        notes,
         interview_date,
         resume_url,
-        created_at, 
+        contact_name,
+        contact_email,
+        contact_linkedin,
+        created_at,
         updated_at
-      FROM applications 
+      FROM applications
       WHERE id = $1 AND user_id = $2`,
       [id, req.userId]
     );
@@ -186,6 +192,9 @@ router.post('/', authenticateToken, async (req, res) => {
     const interview_date = raw.interview_date != null && raw.interview_date !== ''
       ? parseDateOnly(String(raw.interview_date).slice(0, 10))
       : null;
+    const contact_name = trimMax(raw.contact_name, 200);
+    const contact_email = trimMax(raw.contact_email, 200);
+    const contact_linkedin = trimMax(raw.contact_linkedin, 500);
 
     if (!company || !role) {
       return res.status(400).json({
@@ -201,11 +210,11 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 
     const newApplication = await pool.query(
-      `INSERT INTO applications 
-        (user_id, company, role, status, location, applied_at, source, notes, interview_date)  
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+      `INSERT INTO applications
+        (user_id, company, role, status, location, applied_at, source, notes, interview_date, contact_name, contact_email, contact_linkedin)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *`,
-      [req.userId, company, role, status, location, applied_at, source, notes, interview_date]
+      [req.userId, company, role, status, location, applied_at, source, notes, interview_date, contact_name, contact_email, contact_linkedin]
     );
 
     // Return the newly created application
@@ -264,10 +273,13 @@ router.put('/:id', validateIdParam, authenticateToken, async (req, res) => {
           ? parseDateOnly(String(raw.interview_date).slice(0, 10))
           : null)
       : undefined;
+    const contact_name = raw.contact_name !== undefined ? trimMax(raw.contact_name, 200) : null;
+    const contact_email = raw.contact_email !== undefined ? trimMax(raw.contact_email, 200) : null;
+    const contact_linkedin = raw.contact_linkedin !== undefined ? trimMax(raw.contact_linkedin, 500) : null;
 
     const updatedApplication = await pool.query(
-      `UPDATE applications 
-      SET 
+      `UPDATE applications
+      SET
         company = COALESCE($1, company),
         role = COALESCE($2, role),
         status = COALESCE($3, status),
@@ -276,10 +288,13 @@ router.put('/:id', validateIdParam, authenticateToken, async (req, res) => {
         source = COALESCE($6, source),
         notes = COALESCE($7, notes),
         interview_date = $8,
-        updated_at = CURRENT_TIMESTAMP 
-      WHERE id = $9 AND user_id = $10  
+        contact_name = COALESCE($9, contact_name),
+        contact_email = COALESCE($10, contact_email),
+        contact_linkedin = COALESCE($11, contact_linkedin),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = $12 AND user_id = $13
       RETURNING *`,
-      [company, role, status, location, applied_at, source, notes, interview_date === undefined ? existingApp.rows[0].interview_date : interview_date, id, req.userId]
+      [company, role, status, location, applied_at, source, notes, interview_date === undefined ? existingApp.rows[0].interview_date : interview_date, contact_name, contact_email, contact_linkedin, id, req.userId]
     );
 
     res.json({

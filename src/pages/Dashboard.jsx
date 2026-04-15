@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import ApplicationCard from "../components/ApplicationCard/ApplicationCard";
+import KanbanBoard from "../components/KanbanBoard/KanbanBoard";
 import "./Dashboard.css";
+import "../components/KanbanBoard/KanbanBoard.css";
 import WeeklyGoalBar from "../components/WeeklyGoalBar/WeeklyGoalBar";
 import { applicationsAPI, resumeAPI } from "../services/api";
 
@@ -45,6 +47,10 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   const [isInterviewPopupOpen, setIsInterviewPopupOpen] = useState(false);
   const [interviewForm, setInterviewForm] = useState({ date: "", time: "" });
   const [pendingCreateData, setPendingCreateData] = useState(null);
+  const [pendingKanbanDrop, setPendingKanbanDrop] = useState(null); // app id dragged to interview column
+
+  // View mode: "list" or "kanban"
+  const [viewMode, setViewMode] = useState("list");
 
   // ----------------- Filter states ---------------------
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -302,24 +308,36 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   }
 
   function handleCreateInterviewConfirm() {
-    const interview_date =
-      interviewForm.date && interviewForm.time
-        ? `${interviewForm.date}T${interviewForm.time}`
-        : interviewForm.date
-          ? `${interviewForm.date}T00:00`
-          : null;
+    const interview_date = interviewForm.date
+      ? `${interviewForm.date}T${interviewForm.time || "00:00"}`
+      : null;
 
-    doCreateApplication({ ...pendingCreateData, interview_date });
+    if (pendingKanbanDrop !== null) {
+      handleUpdateApplication(pendingKanbanDrop, { status: "interview", interview_date });
+      setPendingKanbanDrop(null);
+    } else {
+      doCreateApplication({ ...pendingCreateData, interview_date });
+      setPendingCreateData(null);
+    }
     setIsInterviewPopupOpen(false);
-    setPendingCreateData(null);
     setInterviewForm({ date: "", time: "" });
   }
 
   function handleCreateInterviewSkip() {
-    doCreateApplication({ ...pendingCreateData, interview_date: null });
+    if (pendingKanbanDrop !== null) {
+      handleUpdateApplication(pendingKanbanDrop, { status: "interview", interview_date: null });
+      setPendingKanbanDrop(null);
+    } else {
+      doCreateApplication({ ...pendingCreateData, interview_date: null });
+      setPendingCreateData(null);
+    }
     setIsInterviewPopupOpen(false);
-    setPendingCreateData(null);
     setInterviewForm({ date: "", time: "" });
+  }
+
+  function handleKanbanDropToInterview(appId) {
+    setPendingKanbanDrop(appId);
+    setIsInterviewPopupOpen(true);
   }
 
   // Handling deleting an application
@@ -374,97 +392,95 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   if (!isLoggedIn) {
     return (
       <main className="dashboard dashboard-empty dashboard-logged-out">
-        {/* Animated gradient background */}
-        <div className="dashboard-background" />
 
-        {/* Floating abstract orbs */}
-        <div className="floating-elements">
-          <div className="floating-orb-1" />
-          <div className="floating-orb-2" />
-          <div className="floating-orb-3" />
-          <div className="floating-orb-4" />
-        </div>
+        {/* Two column hero layout */}
+        <div className="hero-layout">
 
-        {/* Main Content */}
-        <div className="dashboard-content">
-          {/* Enhanced Title with Mirror Shine */}
-          <h1 className="dashboard-title dashboard-title-wrapper">
-            <span className="dashboard-title-gradient">
-              Track your internship applications
-              <br />
-              in one place
-            </span>
+          {/* Left column */}
+          <div className="hero-left">
+            <span className="hero-badge">Free to use</span>
 
-            {/* Mirror shine overlay */}
-            <span className="dashboard-title-shine">
-              Track your internship applications
-              <br />
-              in one place
-            </span>
-          </h1>
-
-          <p className="dashboard-subtitle--hero">
-            Save applications, track statuses, and manage your internship search
-            with clarity.
-          </p>
-
-          {/* Enhanced CTAs */}
-          <div className="dashboard-cta">
-            <button
-              className="btn-primary"
-              onMouseEnter={() => setHoveredButton("login")}
-              onMouseLeave={() => setHoveredButton(null)}
-              onClick={() => onOpenAuth("login")}
-              style={{
-                background:
-                  hoveredButton === "login"
-                    ? "linear-gradient(135deg, #B38CA4 0%, #8B8378 100%)"
-                    : "var(--bg-elevated)",
-              }}
-            >
-              Login
-            </button>
-            <button
-              className="btn-secondary"
-              onMouseEnter={() => setHoveredButton("register")}
-              onMouseLeave={() => setHoveredButton(null)}
-              onClick={() => onOpenAuth("register")}
-            >
-              Register
-            </button>
-          </div>
-
-          {/* Status count bar */}
-          <div className="ghost-stats-strip">
-            <div className="ghost-stat">
-              <span className="ghost-stat-num">12</span>
-              <span className="ghost-stat-label">Applied</span>
-            </div>
-            <div className="ghost-stat-divider" />
-            <div className="ghost-stat">
-              <span className="ghost-stat-num ghost-stat-num--interview">
-                4
+            <h1 className="dashboard-title dashboard-title-wrapper">
+              <span className="dashboard-title-gradient">
+                Track every<br />application.
               </span>
-              <span className="ghost-stat-label">Interviews</span>
-            </div>
-            <div className="ghost-stat-divider" />
-            <div className="ghost-stat">
-              <span className="ghost-stat-num ghost-stat-num--offer">2</span>
-              <span className="ghost-stat-label">Offers</span>
-            </div>
-            <div className="ghost-stat-divider" />
-            <div className="ghost-stat">
-              <span className="ghost-stat-num ghost-stat-num--rejected">3</span>
-              <span className="ghost-stat-label">Rejected</span>
+              <span className="dashboard-title-shine">
+                Track every<br />application.
+              </span>
+            </h1>
+
+            <p className="dashboard-subtitle--hero">
+              Save applications, track statuses, and manage your internship
+              search with complete clarity.
+            </p>
+
+            <ul className="hero-features">
+              <li className="hero-feature-item">Kanban and list view for every stage</li>
+              <li className="hero-feature-item">Interview reminders sent to your email</li>
+              <li className="hero-feature-item">Weekly goals and response rate insights</li>
+            </ul>
+
+            <div className="dashboard-cta">
+              <button
+                className="btn-primary"
+                onClick={() => onOpenAuth("register")}
+              >
+                Get started free
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => onOpenAuth("login")}
+              >
+                Log in
+              </button>
             </div>
           </div>
 
-          {/* Enhanced glassmorphic Cards */}
-          <div className="ghost-grid">
-            {[1, 2, 3].map((i) => (
-              <EnhancedGhostCard key={i} index={i} />
-            ))}
+          {/* Right column — product preview */}
+          <div className="hero-right">
+            <div className="preview-window">
+              {/* Window chrome */}
+              <div className="preview-topbar">
+                <div className="preview-dots">
+                  <span className="preview-dot" />
+                  <span className="preview-dot" />
+                  <span className="preview-dot" />
+                </div>
+                <span className="preview-topbar-title">Applications</span>
+              </div>
+
+              {/* Stats row */}
+              <div className="preview-stats-row">
+                <div className="preview-stat">
+                  <span className="preview-stat-num">12</span>
+                  <span className="preview-stat-label">Applied</span>
+                </div>
+                <div className="preview-stat-sep" />
+                <div className="preview-stat">
+                  <span className="preview-stat-num preview-stat-interview">4</span>
+                  <span className="preview-stat-label">Interviews</span>
+                </div>
+                <div className="preview-stat-sep" />
+                <div className="preview-stat">
+                  <span className="preview-stat-num preview-stat-offer">2</span>
+                  <span className="preview-stat-label">Offers</span>
+                </div>
+                <div className="preview-stat-sep" />
+                <div className="preview-stat">
+                  <span className="preview-stat-num preview-stat-rate">33%</span>
+                  <span className="preview-stat-label">Response</span>
+                </div>
+              </div>
+
+              {/* Preview application cards */}
+              <div className="preview-cards">
+                <PreviewCard company="Google" role="SWE Intern" status="interview" location="Mountain View" index={0} />
+                <PreviewCard company="Stripe" role="Product Intern" status="applied" location="Remote" index={1} />
+                <PreviewCard company="Figma" role="Design Intern" status="offer" location="San Francisco" index={2} />
+              </div>
+            </div>
           </div>
+
         </div>
       </main>
     );
@@ -740,6 +756,32 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
               </div>
             </div>
 
+            {/* View toggle */}
+            <div className="view-toggle">
+              <button
+                className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
+                title="List view"
+                onClick={() => setViewMode("list")}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect x="1" y="2" width="12" height="2" rx="1" fill="currentColor"/>
+                  <rect x="1" y="6" width="12" height="2" rx="1" fill="currentColor"/>
+                  <rect x="1" y="10" width="12" height="2" rx="1" fill="currentColor"/>
+                </svg>
+              </button>
+              <button
+                className={`view-toggle-btn ${viewMode === "kanban" ? "active" : ""}`}
+                title="Kanban view"
+                onClick={() => setViewMode("kanban")}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect x="1" y="1" width="3.5" height="12" rx="1" fill="currentColor"/>
+                  <rect x="5.25" y="1" width="3.5" height="8" rx="1" fill="currentColor"/>
+                  <rect x="9.5" y="1" width="3.5" height="10" rx="1" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+
             <button
               className="btn-primary"
               onClick={() => setIsCreateOpen(true)}
@@ -814,37 +856,49 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
             </div>
           )}
 
-        {/* Applications grid */}
+        {/* Applications — list or kanban */}
         {!loading && !error && filteredApplications.length > 0 && (
-          <div className="dashboard-grid">
-            {filteredApplications.map((app, index) => (
-              <ApplicationCard
-                key={app.id}
-                style={{ animationDelay: `${index * 60}ms` }}
-                id={app.id}
-                company={app.company}
-                role={app.role}
-                status={app.status}
-                location={app.location}
-                appliedAt={app.applied_at}
-                source={app.source}
-                notes={app.notes}
-                interviewDate={app.interview_date}
-                isExpanded={expandedId === app.id}
-                resumeUrl={app.resume_url}
-                onUploadResume={(file) => handleUploadResume(app.id, file)}
-                onDeleteResume={() => handleDeleteResume(app.id)}
-                onToggle={() =>
-                  setExpandedId((prev) => (prev === app.id ? null : app.id))
-                }
-                onDelete={() => handleDeleteApplication(app.id)}
-                onEdit={(updatedData) =>
-                  handleUpdateApplication(app.id, updatedData)
-                }
-                cardRef={expandedId === app.id ? expandedCardRef : null}
-              />
-            ))}
-          </div>
+          viewMode === "list" ? (
+            <div className="dashboard-grid">
+              {filteredApplications.map((app, index) => (
+                <ApplicationCard
+                  key={app.id}
+                  style={{ animationDelay: `${index * 60}ms` }}
+                  id={app.id}
+                  company={app.company}
+                  role={app.role}
+                  status={app.status}
+                  location={app.location}
+                  appliedAt={app.applied_at}
+                  source={app.source}
+                  notes={app.notes}
+                  interviewDate={app.interview_date}
+                  resumeUrl={app.resume_url}
+                  contactName={app.contact_name}
+                  contactEmail={app.contact_email}
+                  contactLinkedin={app.contact_linkedin}
+                  isExpanded={expandedId === app.id}
+                  onUploadResume={(file) => handleUploadResume(app.id, file)}
+                  onDeleteResume={() => handleDeleteResume(app.id)}
+                  onToggle={() =>
+                    setExpandedId((prev) => (prev === app.id ? null : app.id))
+                  }
+                  onDelete={() => handleDeleteApplication(app.id)}
+                  onEdit={(updatedData) =>
+                    handleUpdateApplication(app.id, updatedData)
+                  }
+                  cardRef={expandedId === app.id ? expandedCardRef : null}
+                />
+              ))}
+            </div>
+          ) : (
+            <KanbanBoard
+              applications={filteredApplications}
+              onStatusChange={(id, data) => handleUpdateApplication(id, data)}
+              onDelete={(id) => handleDeleteApplication(id)}
+              onDropToInterview={(id) => handleKanbanDropToInterview(id)}
+            />
+          )
         )}
       </div>
 
@@ -1019,22 +1073,19 @@ export default function Dashboard({ isLoggedIn, onOpenAuth }) {
   );
 } // end of Dashboard function
 
-// Enhanced Ghost Card Component
-function EnhancedGhostCard({ index }) {
-  const [isHovered, setIsHovered] = useState(false);
-
+// Product preview card shown on landing page
+function PreviewCard({ company, role, status, location, index }) {
   return (
     <div
-      className={`ghost-card ${isHovered ? "hovered" : ""}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="preview-card"
+      style={{ animationDelay: `${index * 140}ms` }}
     >
-      {/* Gradient overlay */}
-      <div className={`ghost-card-overlay ghost-card-overlay-${index}`} />
-
-      {/* Card Content Shimmer */}
-      <div className={`ghost-card-shimmer-top delay-${index}`} />
-      <div className={`ghost-card-shimmer-bottom delay-${index}`} />
+      <div className="preview-card-top">
+        <span className="preview-card-company">{company}</span>
+        <span className={`preview-card-badge preview-card-badge-${status}`}>{status}</span>
+      </div>
+      <span className="preview-card-role">{role}</span>
+      <span className="preview-card-location">{location}</span>
     </div>
   );
 }

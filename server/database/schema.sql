@@ -40,6 +40,9 @@ CREATE TABLE IF NOT EXISTS applications (
   applied_at DATE,                    -- Date when application was submitted
   source VARCHAR(200),                -- Where you found the job (LinkedIn, Indeed...)
   notes TEXT,                         -- Any additional notes
+  contact_name VARCHAR(200),          -- Recruiter or hiring manager name
+  contact_email VARCHAR(200),         -- Recruiter or hiring manager email
+  contact_linkedin VARCHAR(500),      -- Recruiter or hiring manager LinkedIn URL
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When this application was created
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Last time this application was updated
   
