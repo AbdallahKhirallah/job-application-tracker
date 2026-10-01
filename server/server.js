@@ -44,6 +44,8 @@ const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
   .map((o) => o.trim())
   .filter(Boolean);
 
+  console.log('Allowed CORS origins:', allowedOrigins);
+
 app.use(cors({
   origin: (origin, cb) => {
     // allow non-browser clients (curl, health checks) with no Origin header

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(100) NOT NULL,         -- User's full name (of max 100 characters)
   email VARCHAR(255) UNIQUE NOT NULL, -- Email must be unique (No duplicates)
   password VARCHAR(255) NOT NULL,     -- Hashed password (using bcrypt)
+  weekly_goal INTEGER DEFAULT 5,      -- Target number of applications per week
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when the account was created
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- last time account was updated
 );
@@ -38,6 +39,8 @@ CREATE TABLE IF NOT EXISTS applications (
   status VARCHAR(50) DEFAULT 'applied',  -- Current status: applied, interview, offer, rejected
   location VARCHAR(200),              -- Job location
   applied_at DATE,                    -- Date when application was submitted
+  interview_date DATE,                -- Scheduled interview date (optional)
+  resume_url VARCHAR(500),            -- URL of the resume uploaded for this application (DO Spaces)
   source VARCHAR(200),                -- Where you found the job (LinkedIn, Indeed...)
   notes TEXT,                         -- Any additional notes
   contact_name VARCHAR(200),          -- Recruiter or hiring manager name
@@ -56,4 +59,13 @@ CREATE INDEX IF NOT EXISTS idx_applications_user_id ON applications(user_id);
 
 -- Add an index on status for faster filtering by status
 CREATE INDEX IF NOT EXISTS idx_applications_status ON applications(status);
+
+-- ============================================
+-- MIGRATIONS (safe to re-run on an existing database)
+-- ============================================
+-- These bring older databases up to date with the columns above.
+
+ALTER TABLE users        ADD COLUMN IF NOT EXISTS weekly_goal INTEGER DEFAULT 5;
+ALTER TABLE applications ADD COLUMN IF NOT EXISTS interview_date DATE;
+ALTER TABLE applications ADD COLUMN IF NOT EXISTS resume_url VARCHAR(500);
 
