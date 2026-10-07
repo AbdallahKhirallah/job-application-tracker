@@ -7,7 +7,6 @@ now ?
 
 A full-stack web app to track your job search from first apply to final offer. Log applications, monitor statuses, manage interviews, and stay on top of your weekly goals, all in one place.
 
-🌐 Live at trackjat.me
 
 ## Screenshot
 [JAT Screenshot](docs/assets/screenshot.png)
